@@ -77,10 +77,7 @@
 
 <body>
   <div class="card">
-    <div class="header">
-  <h1>LEWMIS</h1>
-  <div id="modeBadge">Modo -</div>
-</div>
+    <h1 id="title">LEWMIS</h1>
 
     <div class="label">Caja</div>
     <div class="value" id="box">-</div>
@@ -147,7 +144,21 @@
       document.getElementById("box").innerText = box.box_id || "-";
       document.getElementById("product").innerText = box.product || "-";
       document.getElementById("state").innerText = box.state || "-";
-      document.getElementById("modeBadge").innerText = "Modo " + (box.mode || "-");
+      // =========================
+// FORMATO DE MODO LEGIBLE
+// =========================
+function getModeLabel(mode) {
+  switch (mode) {
+    case 1: return "Campo";
+    case 2: return "Transporte";
+    case 3: return "Inventario";
+    case 4: return "Retail";
+    default: return "-";
+  }
+}
+
+document.getElementById("title").innerText =
+  "LEWMIS - " + getModeLabel(box.mode);
       document.getElementById("weight").innerText = formatWeight(box.weight_kg);
       document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
       document.getElementById("battery").innerText =
