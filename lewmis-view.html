@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEWMIS Box</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f1720;
+      color: white;
+      padding: 20px;
+    }
+
+    .card {
+      max-width: 420px;
+      margin: auto;
+      background: #101820;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #4fc3f7;
+      font-size: 28px;
+    }
+
+    .label {
+      color: #b0bec5;
+      font-size: 14px;
+      margin-top: 18px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .money {
+      color: #ffd54f;
+      font-size: 36px;
+    }
+
+    .state {
+      color: #66bb6a;
+    }
+
+    .small {
+      margin-top: 20px;
+      color: #90a4ae;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>LEWMIS</h1>
+
+    <div class="label">Caja</div>
+    <div class="value" id="box">-</div>
+
+    <div class="label">Producto</div>
+    <div class="value" id="product">-</div>
+
+    <div class="label">Estado</div>
+    <div class="value state" id="state">-</div>
+
+    <div class="label">Peso</div>
+    <div class="value" id="weight">-</div>
+
+    <div class="label">A pagar</div>
+    <div class="value money" id="amount">$ 0,00</div>
+
+    <div class="label">Batería</div>
+    <div class="value" id="battery">-</div>
+
+    <div class="small" id="updated">Última actualización: -</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
+
+    const BOX_ID = "cebolla-01";
+
+    function formatMoney(value) {
+      const n = Number(value || 0);
+      return "$ " + n.toLocaleString("es-CO") + ",00";
+    }
+
+    function formatWeight(kg) {
+      const v = Number(kg || 0);
+
+      if (Math.abs(v) < 1) {
+        return Math.round(v * 1000) + " g";
+      }
+
+      return v.toFixed(3) + " kg";
+    }
+
+    async function loadBoxStatus() {
+      const url =
+        `${SUPABASE_URL}/rest/v1/box_status?box_id=eq.${encodeURIComponent(BOX_ID)}&select=*`;
+
+      const res = await fetch(url, {
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (!data || data.length === 0) {
+        document.getElementById("state").innerText = "SIN DATOS";
+        return;
+      }
+
+      const box = data[0];
+
+      document.getElementById("box").innerText = box.box_id || "-";
+      document.getElementById("product").innerText = box.product || "-";
+      document.getElementById("state").innerText = box.state || "-";
+      document.getElementById("weight").innerText = formatWeight(box.weight_kg);
+      document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+      document.getElementById("battery").innerText =
+        box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
+
+      const d = new Date(Number(box.updated_at));
+      document.getElementById("updated").innerText =
+        "Última actualización: " + d.toLocaleString("es-CO");
+    }
+
+    loadBoxStatus();
+    setInterval(loadBoxStatus, 2000);
+  </script>
+</body>
+</html>
