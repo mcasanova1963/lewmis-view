@@ -95,8 +95,10 @@
     <div class="value" id="transportDelta">-</div>
 </div>
 
-    <div class="label">A pagar</div>
-    <div class="value money" id="amount">$ 0,00</div>
+    <div id="amountBlock">
+  <div class="label" id="amountLabel">A pagar</div>
+  <div class="value money" id="amount">$ 0,00</div>
+</div>
 
     <div class="label">Estado</div>
     <div class="value state" id="state">-</div>
@@ -168,6 +170,13 @@
       document.getElementById("state").innerText = box.state || "-";
       document.getElementById("weight").innerText = formatWeight(box.weight_kg);
       document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+      const amountBlock = document.getElementById("amountBlock");
+
+      if (Number(box.mode) === 4 || Number(box.mode) === 1) {
+      amountBlock.style.display = "block";
+      } else {
+      amountBlock.style.display = "none";
+      }
       document.getElementById("battery").innerText =
         box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
   function getWeightLabel(mode, weightType) {
