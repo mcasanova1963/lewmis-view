@@ -158,7 +158,7 @@
   }
 
   async function loadBoxStatus() {
-    const url = `${SUPABASE_URL}/rest/v1/box_status?select=*&order=updated_at.desc&limit=1`;
+    const url = SUPABASE_URL + "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=1";
 
     const res = await fetch(url, {
       headers: {
