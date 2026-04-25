@@ -124,7 +124,7 @@
     const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
 
-  const BOX_ID = "cebolla-01";
+  select=*&order=updated_at.desc&limit=1
 
   function formatMoney(value) {
     const n = Number(value || 0);
@@ -158,7 +158,7 @@
   }
 
   async function loadBoxStatus() {
-    const url = `${SUPABASE_URL}/rest/v1/box_status?box_id=eq.${encodeURIComponent(BOX_ID)}&select=*`;
+    const url = `${SUPABASE_URL}/rest/v1/box_status?select=*&order=updated_at.desc&limit=1`;
 
     const res = await fetch(url, {
       headers: {
