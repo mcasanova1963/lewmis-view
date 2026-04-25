@@ -79,20 +79,20 @@
   <div class="card">
     <h1 id="title">LEWMIS</h1>
 
-    <div class="label">Caja</div>
-    <div class="value" id="box">-</div>
-
     <div class="label">Producto</div>
     <div class="value" id="product">-</div>
 
-    <div class="label">Estado</div>
-    <div class="value state" id="state">-</div>
+    <div class="label">Precio</div>
+    <div class="value" id="price">-</div>
 
     <div class="label">Peso</div>
     <div class="value" id="weight">-</div>
 
     <div class="label">A pagar</div>
     <div class="value money" id="amount">$ 0,00</div>
+
+    <div class="label">Estado</div>
+    <div class="value state" id="state">-</div>
 
     <div class="label">Batería</div>
     <div class="value" id="battery">-</div>
@@ -143,6 +143,8 @@
 
       document.getElementById("box").innerText = box.box_id || "-";
       document.getElementById("product").innerText = box.product || "-";
+      document.getElementById("price").innerText =
+  box.price_per_kg ? formatMoney(box.price_per_kg) + " / kg" : "-";
       document.getElementById("state").innerText = box.state || "-";
       // =========================
 // FORMATO DE MODO LEGIBLE
