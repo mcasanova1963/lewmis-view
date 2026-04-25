@@ -6,6 +6,21 @@
   <title>LEWMIS Box</title>
 
   <style>
+    .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#modeBadge {
+  background: #1e293b;
+  color: #4fc3f7;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: bold;
+}
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -62,7 +77,10 @@
 
 <body>
   <div class="card">
-    <h1>LEWMIS</h1>
+    <div class="header">
+  <h1>LEWMIS</h1>
+  <div id="modeBadge">Modo -</div>
+</div>
 
     <div class="label">Caja</div>
     <div class="value" id="box">-</div>
@@ -129,6 +147,7 @@
       document.getElementById("box").innerText = box.box_id || "-";
       document.getElementById("product").innerText = box.product || "-";
       document.getElementById("state").innerText = box.state || "-";
+      document.getElementById("modeBadge").innerText = "Modo " + (box.mode || "-");
       document.getElementById("weight").innerText = formatWeight(box.weight_kg);
       document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
       document.getElementById("battery").innerText =
