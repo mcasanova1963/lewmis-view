@@ -171,6 +171,19 @@
 } else {
   transportExtra.style.display = "none";
 }
+      const inventoryExtra = document.getElementById("inventoryExtra");
+
+if (Number(box.mode) === 3) {
+  inventoryExtra.style.display = "block";
+
+  document.getElementById("inventoryBase").innerText =
+    formatWeight(box.inventory_base_kg || 0);
+
+  document.getElementById("inventoryDelta").innerText =
+    formatWeight(box.inventory_delta_kg || 0);
+} else {
+  inventoryExtra.style.display = "none";
+}
       document.getElementById("product").innerText = box.product || "-";
       document.getElementById("price").innerText =
   box.price_per_kg ? formatMoney(box.price_per_kg) + " / kg" : "-";
