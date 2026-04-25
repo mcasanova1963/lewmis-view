@@ -158,7 +158,7 @@
   }
 
   async function loadBoxStatus() {
-    const url = `${SUPABASE_URL}/rest/v1/box_status?select=*&order=updated_at.desc.nullslast&limit=1&t=${Date.now()}`;
+    const url = `${SUPABASE_URL}/rest/v1/box_status?select=*&order=updated_at.desc&limit=1`;
 
     const res = await fetch(url, {
       headers: {
@@ -168,12 +168,12 @@
     });
 
     const data = await res.json();
-
+  
     if (!data || data.length === 0) {
       document.getElementById("state").innerText = "SIN DATOS";
       return;
     }
-
+    console.log("SUPABASE DATA:", data);
     const box = data[0];
 
     document.getElementById("title").innerText = "LEWMIS - " + getModeLabel(box.mode);
