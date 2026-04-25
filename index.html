@@ -85,7 +85,7 @@
     <div class="label">Precio</div>
     <div class="value" id="price">-</div>
 
-    <div class="label">Peso</div>
+    <div class="label" id="weightLabel">Peso</div>
     <div class="value" id="weight">-</div>
 
     <div class="label">A pagar</div>
@@ -140,8 +140,8 @@
       }
 
       const box = data[0];
-
-      
+      document.getElementById("weightLabel").innerText =
+  getWeightLabel(box.mode, box.weight_type);
       document.getElementById("product").innerText = box.product || "-";
       document.getElementById("price").innerText =
   box.price_per_kg ? formatMoney(box.price_per_kg) + " / kg" : "-";
@@ -150,6 +150,20 @@
       document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
       document.getElementById("battery").innerText =
         box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
+  function getWeightLabel(mode, weightType) {
+  switch (Number(mode)) {
+    case 1:
+      return "Peso";
+    case 2:
+      return "Actual";
+    case 3:
+      return "Peso";
+    case 4:
+      return "Llevas";
+    default:
+      return "Peso";
+  }
+}
       // =========================
       // FORMATO DE MODO LEGIBLE
       // =========================
