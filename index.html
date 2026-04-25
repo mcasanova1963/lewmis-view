@@ -190,13 +190,20 @@ if (Number(box.mode) === 3) {
       document.getElementById("state").innerText = box.state || "-";
       document.getElementById("weight").innerText = formatWeight(box.weight_kg);
       document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+      
       const amountBlock = document.getElementById("amountBlock");
+      const amountLabel = document.getElementById("amountLabel");
 
-      if (Number(box.mode) === 4 || Number(box.mode) === 1) {
+      if (Number(box.mode) === 1) {
       amountBlock.style.display = "block";
+      amountLabel.innerText = "Valor";
+      } else if (Number(box.mode) === 4) {
+      amountBlock.style.display = "block";
+      amountLabel.innerText = "A pagar";
       } else {
       amountBlock.style.display = "none";
       }
+      
       document.getElementById("battery").innerText =
         box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
   function getWeightLabel(mode, weightType) {
