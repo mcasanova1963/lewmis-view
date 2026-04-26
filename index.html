@@ -184,11 +184,21 @@
     document.getElementById("weight").innerText = formatWeight(box.weight_kg);
 
     const fieldExtra = document.getElementById("fieldExtra");
+    
     if (Number(box.mode) === 1) {
-      fieldExtra.style.display = "block";
-      document.getElementById("fieldTarget").innerText = formatWeight(box.target_kg || 0);
+    fieldExtra.style.display = "block";
+
+    const fieldTarget = document.getElementById("fieldTarget");
+    fieldTarget.innerText = formatWeight(box.target_kg || 0);
+
+    if ((box.state || "").toUpperCase() === "META") {
+    fieldTarget.style.color = "#66bb6a"; // verde
     } else {
-      fieldExtra.style.display = "none";
+    fieldTarget.style.color = "#ffd54f"; // amarillo
+    }
+
+    } else {
+    fieldExtra.style.display = "none";
     }
 
     const transportExtra = document.getElementById("transportExtra");
