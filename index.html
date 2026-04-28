@@ -183,11 +183,15 @@
 
     document.getElementById("title").innerText = "LEWMIS - " + getModeLabel(box.mode);
     document.getElementById("product").innerText = box.product || "-";
+    const unit = box.unit || "kg";
+
     document.getElementById("price").innerText =
-      box.price_per_kg ? formatMoney(box.price_per_kg) + " / kg" : "-";
+    box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
+
+    document.getElementById("weight").innerText = formatWeight(box.weight_kg, unit);
 
     document.getElementById("weightLabel").innerText = getWeightLabel(box.mode);
-    document.getElementById("weight").innerText = formatWeight(box.weight_kg);
+    
 
     const fieldExtra = document.getElementById("fieldExtra");
     
