@@ -1,1 +1,140 @@
+const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
 
+
+  function formatMoney(value) {
+    const n = Number(value || 0);
+    return "$ " + n.toLocaleString("es-CO") + ",00";
+  }
+
+  function formatWeight(kg, unit) {
+  console.log("FORMAT UNIT:", unit);
+  const v = Number(kg || 0);
+
+  if (unit === "lb") {
+    const lb = v * 2.20462;
+    return lb.toFixed(3) + " lb";
+  }
+
+  if (Math.abs(v) < 1) return Math.round(v * 1000) + " g";
+  return v.toFixed(2) + " kg";
+}
+
+  function getWeightLabel(mode) {
+    switch (Number(mode)) {
+      case 1: return "Peso";
+      case 2: return "Actual";
+      case 3: return "Peso";
+      case 4: return "Llevas";
+      default: return "Peso";
+    }
+  }
+
+  function getModeLabel(mode) {
+    switch (Number(mode)) {
+      case 1: return "Campo";
+      case 2: return "Transporte";
+      case 3: return "Inventario";
+      case 4: return "Retail";
+      default: return "-";
+    }
+  }
+
+  async function loadBoxStatus() {
+    const url = SUPABASE_URL + "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=1";
+
+    const res = await fetch(url, {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+      }
+    });
+
+    const data = await res.json();
+  
+    if (!data || data.length === 0) {
+      document.getElementById("state").innerText = "SIN DATOS";
+      return;
+    }
+    console.log("SUPABASE DATA:", data);
+    const box = data[0];
+    const unit = (box.unit || "kg").toLowerCase();
+
+    console.log("UNIT FROM DB:", box.unit);
+
+    document.getElementById("title").innerText = "LEWMIS - " + getModeLabel(box.mode);
+    document.getElementById("product").innerText = box.product || "-";
+    
+
+    document.getElementById("price").innerText =
+    box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
+
+    const formattedWeight = formatWeight(box.weight_kg, unit);
+    console.log("FORMATTED WEIGHT:", formattedWeight);
+    document.getElementById("weight").innerText = formattedWeight;
+
+    document.getElementById("weightLabel").innerText = getWeightLabel(box.mode);
+    
+
+    const fieldExtra = document.getElementById("fieldExtra");
+    
+    if (Number(box.mode) === 1) {
+    fieldExtra.style.display = "block";
+
+    const fieldTarget = document.getElementById("fieldTarget");
+    fieldTarget.innerText = formatWeight(box.target_kg || 0, unit);
+
+    if ((box.state || "").toUpperCase() === "META") {
+    fieldTarget.style.color = "#66bb6a"; // verde
+    } else {
+    fieldTarget.style.color = "#ffd54f"; // amarillo
+    }
+
+    } else {
+    fieldExtra.style.display = "none";
+    }
+
+    const transportExtra = document.getElementById("transportExtra");
+    if (Number(box.mode) === 2) {
+      transportExtra.style.display = "block";
+      document.getElementById("transportBase").innerText = formatWeight(box.transport_base_kg || 0);
+      document.getElementById("transportDelta").innerText = formatWeight(box.transport_delta_kg || 0);
+    } else {
+      transportExtra.style.display = "none";
+    }
+
+    const inventoryExtra = document.getElementById("inventoryExtra");
+    if (Number(box.mode) === 3) {
+      inventoryExtra.style.display = "block";
+      document.getElementById("inventoryBase").innerText = formatWeight(box.inventory_base_kg || 0);
+      document.getElementById("inventoryDelta").innerText = formatWeight(box.inventory_delta_kg || 0);
+    } else {
+      inventoryExtra.style.display = "none";
+    }
+
+    const amountBlock = document.getElementById("amountBlock");
+    const amountLabel = document.getElementById("amountLabel");
+
+    if (Number(box.mode) === 1) {
+      amountBlock.style.display = "block";
+      amountLabel.innerText = "Valor";
+      document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+    } else if (Number(box.mode) === 4) {
+      amountBlock.style.display = "block";
+      amountLabel.innerText = "A pagar";
+      document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+    } else {
+      amountBlock.style.display = "none";
+    }
+
+    document.getElementById("state").innerText = box.state || "-";
+    document.getElementById("battery").innerText =
+      box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
+
+    const d = new Date(Number(box.updated_at));
+    document.getElementById("updated").innerText =
+      "Última actualización: " + d.toLocaleString("es-CO");
+  }
+
+  loadBoxStatus();
+  setInterval(loadBoxStatus, 2000);
