@@ -97,11 +97,14 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     const transportExtra = document.getElementById("transportExtra");
     if (Number(box.mode) === 2) {
       transportExtra.style.display = "block";
-      document.getElementById("transportBase").innerText = formatWeight(box.transport_base_kg || 0);
-      document.getElementById("transportDelta").innerText = formatWeight(box.transport_delta_kg || 0);
-    } else {
+      document.getElementById("transportBase").innerText =
+      formatWeight(box.transport_base_kg || 0, unit);
+
+      document.getElementById("transportDelta").innerText =
+      formatWeight(box.transport_delta_kg || 0, unit);
+      } else {
       transportExtra.style.display = "none";
-    }
+      }
 
     const inventoryExtra = document.getElementById("inventoryExtra");
     if (Number(box.mode) === 3) {
