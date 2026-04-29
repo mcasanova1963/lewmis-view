@@ -103,16 +103,10 @@ if (Number(box.mode) === 2) {
 
   const state = (box.state || "").toUpperCase();
 
-  if (state === "OK" || state === "EN_RUTA" || state === "RECIBIDO") {
-    document.getElementById("transportDelta").innerText =
-      formatWeight(box.transport_delta_kg || 0, unit);
-  } else {
-    document.getElementById("transportDelta").innerText = "-";
-  }
-
-} else {
-  transportExtra.style.display = "none";
-}
+  document.getElementById("transportDelta").innerText =
+  "STATE=" + state +
+  " / DELTA=" + box.transport_delta_kg +
+  " / UNIT=" + unit;
 
     const inventoryExtra = document.getElementById("inventoryExtra");
     if (Number(box.mode) === 3) {
