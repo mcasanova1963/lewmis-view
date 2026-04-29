@@ -95,16 +95,24 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     }
 
     const transportExtra = document.getElementById("transportExtra");
-    if (Number(box.mode) === 2) {
-      transportExtra.style.display = "block";
-      document.getElementById("transportBase").innerText =
-      formatWeight(box.transport_base_kg || 0, unit);
+if (Number(box.mode) === 2) {
+  transportExtra.style.display = "block";
 
-      document.getElementById("transportDelta").innerText =
+  document.getElementById("transportBase").innerText =
+    formatWeight(box.transport_base_kg || 0, unit);
+
+  const state = (box.state || "").toUpperCase();
+
+  if (state === "OK" || state === "EN_RUTA" || state === "RECIBIDO") {
+    document.getElementById("transportDelta").innerText =
       formatWeight(box.transport_delta_kg || 0, unit);
-      } else {
-      transportExtra.style.display = "none";
-      }
+  } else {
+    document.getElementById("transportDelta").innerText = "-";
+  }
+
+} else {
+  transportExtra.style.display = "none";
+}
 
     const inventoryExtra = document.getElementById("inventoryExtra");
     if (Number(box.mode) === 3) {
