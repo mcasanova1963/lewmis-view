@@ -150,7 +150,7 @@ if (Number(box.mode) === 1) {
   amountBlock.style.display = "none";
 }
 
-  document.getElementById("state").innerText = box.state || "-";
+  document.getElementById("state").innerText = state || "-";
 
   document.getElementById("battery").innerText =
   box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
