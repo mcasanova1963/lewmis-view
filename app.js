@@ -102,7 +102,7 @@ if (Number(box.mode) === 2) {
   document.getElementById("transportBase").innerText =
     formatWeight(box.transport_base_kg || 0, unit);
 
-  const state = (box.state || "").toUpperCase();
+  const state = (box.state || "").toString().trim().toUpperCase();
 
   if (
     state === "OK" ||
