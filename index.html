@@ -208,7 +208,7 @@
     fieldExtra.style.display = "block";
 
     const fieldTarget = document.getElementById("fieldTarget");
-    fieldTarget.innerText = formatWeight(box.target_kg || 0);
+    fieldTarget.innerText = formatWeight(box.target_kg || 0, unit);
 
     if ((box.state || "").toUpperCase() === "META") {
     fieldTarget.style.color = "#66bb6a"; // verde
