@@ -181,6 +181,8 @@
     console.log("SUPABASE DATA:", data);
     const box = data[0];
 
+    console.log("UNIT FROM DB:", box.unit);
+
     document.getElementById("title").innerText = "LEWMIS - " + getModeLabel(box.mode);
     document.getElementById("product").innerText = box.product || "-";
     const unit = box.unit || "kg";
