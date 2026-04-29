@@ -160,4 +160,4 @@ if (Number(box.mode) === 1) {
   "Última actualización: " + d.toLocaleString("es-CO");
   }
   loadBoxStatus(); 
-  setInterval(loadBoxStatus, 2000);
+  setInterval(loadBoxStatus, 1000);
