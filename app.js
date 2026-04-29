@@ -94,7 +94,8 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     fieldExtra.style.display = "none";
     }
 
-    const transportExtra = document.getElementById("transportExtra");
+   const transportExtra = document.getElementById("transportExtra");
+
 if (Number(box.mode) === 2) {
   transportExtra.style.display = "block";
 
@@ -103,46 +104,55 @@ if (Number(box.mode) === 2) {
 
   const state = (box.state || "").toUpperCase();
 
-  document.getElementById("transportDelta").innerText =
-  "STATE=" + state +
-  " / DELTA=" + box.transport_delta_kg +
-  " / UNIT=" + unit;
-
-    const inventoryExtra = document.getElementById("inventoryExtra");
-    if (Number(box.mode) === 3) {
-      inventoryExtra.style.display = "block";
-      document.getElementById("inventoryBase").innerText =
-      formatWeight(box.inventory_base_kg || 0, unit);
-
-      document.getElementById("inventoryDelta").innerText =
-      formatWeight(box.inventory_delta_kg || 0, unit);
-      } else {
-      inventoryExtra.style.display = "none";
-      }
-
-    const amountBlock = document.getElementById("amountBlock");
-    const amountLabel = document.getElementById("amountLabel");
-
-    if (Number(box.mode) === 1) {
-      amountBlock.style.display = "block";
-      amountLabel.innerText = "Valor";
-      document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
-    } else if (Number(box.mode) === 4) {
-      amountBlock.style.display = "block";
-      amountLabel.innerText = "A pagar";
-      document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
-    } else {
-      amountBlock.style.display = "none";
-    }
-
-    document.getElementById("state").innerText = box.state || "-";
-    document.getElementById("battery").innerText =
-      box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
-
-    const d = new Date(Number(box.updated_at));
-    document.getElementById("updated").innerText =
-      "Última actualización: " + d.toLocaleString("es-CO");
+  if (state === "OK" || state === "EN_RUTA" || state === "RECIBIDO") {
+    document.getElementById("transportDelta").innerText =
+      formatWeight(box.transport_delta_kg || 0, unit);
+  } else {
+    document.getElementById("transportDelta").innerText = "-";
   }
 
-  loadBoxStatus();
+} else {
+  transportExtra.style.display = "none";
+}
+
+const inventoryExtra = document.getElementById("inventoryExtra");
+
+if (Number(box.mode) === 3) {
+  inventoryExtra.style.display = "block";
+
+  document.getElementById("inventoryBase").innerText =
+    formatWeight(box.inventory_base_kg || 0, unit);
+
+  document.getElementById("inventoryDelta").innerText =
+    formatWeight(box.inventory_delta_kg || 0, unit);
+
+} else {
+  inventoryExtra.style.display = "none";
+}
+
+const amountBlock = document.getElementById("amountBlock");
+const amountLabel = document.getElementById("amountLabel");
+
+if (Number(box.mode) === 1) {
+  amountBlock.style.display = "block";
+  amountLabel.innerText = "Valor";
+  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+} else if (Number(box.mode) === 4) {
+  amountBlock.style.display = "block";
+  amountLabel.innerText = "A pagar";
+  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+} else {
+  amountBlock.style.display = "none";
+}
+
+  document.getElementById("state").innerText = box.state || "-";
+
+  document.getElementById("battery").innerText =
+  box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
+
+  const d = new Date(Number(box.updated_at));
+  document.getElementById("updated").innerText =
+  "Última actualización: " + d.toLocaleString("es-CO");
+  }
+  loadBoxStatus(); 
   setInterval(loadBoxStatus, 2000);
