@@ -102,14 +102,15 @@ if (Number(box.mode) === 2) {
   document.getElementById("transportBase").innerText =
     formatWeight(box.transport_base_kg || 0, unit);
 
-  const state = (box.state || "").toString().trim().toUpperCase();
+  const transportState = (box.state || "").toString().trim().toUpperCase();
 
   if (
-    state === "OK" ||
-    state === "FALTANTE" ||
-    state === "EXCESO" ||
-    state === "RECIBIDO"
-  ) {
+  transportState === "OK" ||
+  transportState === "FALTANTE" ||
+  transportState === "EXCESO" ||
+  transportState === "RECIBIDO" ||
+  transportState === "VACIA"
+) {
     document.getElementById("transportDelta").innerText =
       formatWeight(box.transport_delta_kg || 0, unit);
   } else {
@@ -150,7 +151,7 @@ if (Number(box.mode) === 1) {
   amountBlock.style.display = "none";
 }
 
-  document.getElementById("state").innerText = state || "-";
+  document.getElementById("state").innerText = box.state || "-";
 
   document.getElementById("battery").innerText =
   box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
