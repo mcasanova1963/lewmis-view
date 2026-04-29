@@ -180,6 +180,7 @@
     }
     console.log("SUPABASE DATA:", data);
     const box = data[0];
+    const unit = (box.unit || "kg").toLowerCase();
 
     console.log("UNIT FROM DB:", box.unit);
 
