@@ -104,7 +104,17 @@ if (Number(box.mode) === 2) {
 
   const state = (box.state || "").toUpperCase();
 
-  if (state === "OK" || state === "EN_RUTA" || state === "RECIBIDO") {
+ if (
+  state === "OK" ||
+  state === "FALTANTE" ||
+  state === "EXCESO" ||
+  state === "RECIBIDO"
+) {
+  document.getElementById("transportDelta").innerText =
+    formatWeight(box.transport_delta_kg || 0, unit);
+} else {
+  document.getElementById("transportDelta").innerText = "-";
+}
     document.getElementById("transportDelta").innerText =
       formatWeight(box.transport_delta_kg || 0, unit);
   } else {
