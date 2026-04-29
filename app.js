@@ -109,11 +109,14 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     const inventoryExtra = document.getElementById("inventoryExtra");
     if (Number(box.mode) === 3) {
       inventoryExtra.style.display = "block";
-      document.getElementById("inventoryBase").innerText = formatWeight(box.inventory_base_kg || 0);
-      document.getElementById("inventoryDelta").innerText = formatWeight(box.inventory_delta_kg || 0);
-    } else {
+      document.getElementById("inventoryBase").innerText =
+      formatWeight(box.inventory_base_kg || 0, unit);
+
+      document.getElementById("inventoryDelta").innerText =
+      formatWeight(box.inventory_delta_kg || 0, unit);
+      } else {
       inventoryExtra.style.display = "none";
-    }
+      }
 
     const amountBlock = document.getElementById("amountBlock");
     const amountLabel = document.getElementById("amountLabel");
