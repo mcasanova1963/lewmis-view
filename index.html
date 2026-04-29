@@ -192,7 +192,9 @@
     document.getElementById("price").innerText =
     box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
 
-    document.getElementById("weight").innerText = formatWeight(box.weight_kg, unit);
+    const formattedWeight = formatWeight(box.weight_kg, unit);
+    console.log("FORMATTED WEIGHT:", formattedWeight);
+    document.getElementById("weight").innerText = formattedWeight;
 
     document.getElementById("weightLabel").innerText = getWeightLabel(box.mode);
     
