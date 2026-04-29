@@ -187,7 +187,7 @@
 
     document.getElementById("title").innerText = "LEWMIS - " + getModeLabel(box.mode);
     document.getElementById("product").innerText = box.product || "-";
-    const unit = box.unit || "kg";
+    
 
     document.getElementById("price").innerText =
     box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
