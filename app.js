@@ -161,7 +161,6 @@ if (Number(box.mode) === 1) {
   document.getElementById("state").innerText = box.state || "-";
 
 const sensorEl = document.getElementById("sensor");
-const demoSensor = box.demo_sensor || "OFF";
 const demoValue = box.demo_sensor_value || "-";
 
 if (sensorEl) {
