@@ -160,14 +160,16 @@ if (Number(box.mode) === 1) {
 
   document.getElementById("state").innerText = box.state || "-";
 
-  const demoSensor = box.demo_sensor || "OFF";
-  const demoValue = box.demo_sensor_value || "-";
+const sensorEl = document.getElementById("sensor");
+const demoSensor = box.demo_sensor || "OFF";
+const demoValue = box.demo_sensor_value || "-";
 
+if (sensorEl) {
   if (demoSensor !== "OFF") {
-  document.getElementById("sensor").innerText =
-    demoSensor + ": " + demoValue;
-} else {
-  document.getElementById("sensor").innerText = "-";
+    sensorEl.innerText = demoSensor + ": " + demoValue;
+  } else {
+    sensorEl.innerText = "-";
+  }
 }
 
   document.getElementById("battery").innerText =
