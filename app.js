@@ -95,9 +95,11 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     }
 
    const transportExtra = document.getElementById("transportExtra");
+   const transportDeltaBlock = document.getElementById("transportDeltaBlock");
 
-if (Number(box.mode) === 2) {
+  if (Number(box.mode) === 2) {
   transportExtra.style.display = "block";
+  transportDeltaBlock.style.display = "block";
 
   document.getElementById("transportBase").innerText =
     formatWeight(box.transport_base_kg || 0, unit);
@@ -119,6 +121,7 @@ if (Number(box.mode) === 2) {
 
 } else {
   transportExtra.style.display = "none";
+  transportDeltaBlock.style.display = "none";
 }
 
 const inventoryExtra = document.getElementById("inventoryExtra");
