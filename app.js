@@ -57,8 +57,12 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
       return;
     }
     console.log("SUPABASE DATA:", data);
+      
     const box = data[0];
-    const unit = (box.unit || "kg").toLowerCase();
+      const demoSensor = box.demo_sensor || "OFF";
+      const demoValue = box.demo_sensor_value || "-";
+    
+      const unit = (box.unit || "kg").toLowerCase();
 
     console.log("UNIT FROM DB:", box.unit);
 
@@ -155,6 +159,16 @@ if (Number(box.mode) === 1) {
 }
 
   document.getElementById("state").innerText = box.state || "-";
+
+  const demoSensor = box.demo_sensor || "OFF";
+  const demoValue = box.demo_sensor_value || "-";
+
+  if (demoSensor !== "OFF") {
+  document.getElementById("sensor").innerText =
+    demoSensor + ": " + demoValue;
+} else {
+  document.getElementById("sensor").innerText = "-";
+}
 
   document.getElementById("battery").innerText =
   box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
