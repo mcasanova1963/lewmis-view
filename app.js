@@ -13,7 +13,7 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
 
   if (unit === "lb") {
     const lb = v * 2.20462;
-    return lb.toFixed(3) + " lb";
+    return lb.toFixed(2) + " lb";
   }
 
   if (Math.abs(v) < 1) return Math.round(v * 1000) + " g";
