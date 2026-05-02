@@ -158,7 +158,13 @@ if (Number(box.mode) === 1) {
   amountBlock.style.display = "none";
 }
 
-  document.getElementById("state").innerText = box.state || "-";
+  const rawState = (box.state || "").toString().trim().toUpperCase();
+
+const stateVisual = rawState === "IDLE"
+  ? "ESPERA"
+  : (box.state || "-");
+
+document.getElementById("state").innerText = stateVisual;
 
 const sensorEl = document.getElementById("sensor");
 
