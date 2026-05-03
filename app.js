@@ -100,6 +100,11 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
 
    const transportExtra = document.getElementById("transportExtra");
    const transportDeltaBlock = document.getElementById("transportDeltaBlock");
+    let transportStateVisual = (box.state || "-").toString().trim().toUpperCase();
+
+   if (transportStateVisual === "IDLE") {
+   transportStateVisual = "ESPERA";
+   }
 
   if (Number(box.mode) === 2) {
   transportExtra.style.display = "block";
@@ -113,7 +118,6 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
  const deltaKg = Number(box.transport_delta_kg || 0);
 const deltaGrams = Math.round((deltaKg * 1000) / 10) * 10;
 
-let transportStateVisual = transportState;
 
 if (transportState === "IDLE") {
   transportStateVisual = "ESPERA";
