@@ -110,18 +110,41 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
 
   const transportState = (box.state || "").toString().trim().toUpperCase();
 
-  if (
+ const deltaKg = Number(box.transport_delta_kg || 0);
+const deltaGrams = Math.round((deltaKg * 1000) / 10) * 10;
+
+let transportStateVisual = transportState;
+
+if (transportState === "IDLE") {
+  transportStateVisual = "ESPERA";
+}
+
+if (
   transportState === "OK" ||
   transportState === "FALTANTE" ||
   transportState === "EXCESO" ||
   transportState === "RECIBIDO" ||
   transportState === "VACIA"
 ) {
-    document.getElementById("transportDelta").innerText =
-      formatWeight(box.transport_delta_kg || 0, unit);
+  if (unit === "kg" && Math.abs(deltaKg) < 1) {
+    document.getElementById("transportDelta").innerText = deltaGrams + " g";
   } else {
-    document.getElementById("transportDelta").innerText = "-";
+    document.getElementById("transportDelta").innerText =
+      formatWeight(deltaKg, unit);
   }
+
+  if (transportState !== "RECIBIDO") {
+    if (Math.abs(deltaGrams) <= 10) {
+      transportStateVisual = "OK";
+    } else if (deltaGrams < 0) {
+      transportStateVisual = "FALTANTE";
+    } else {
+      transportStateVisual = "EXCESO";
+    }
+  }
+} else {
+  document.getElementById("transportDelta").innerText = "-";
+}
 
 } else {
   transportExtra.style.display = "none";
@@ -158,11 +181,12 @@ if (Number(box.mode) === 1) {
   amountBlock.style.display = "none";
 }
 
-  const rawState = (box.state || "").toString().trim().toUpperCase();
+ const rawState = (box.state || "").toString().trim().toUpperCase();
 
-const stateVisual = rawState === "IDLE"
-  ? "ESPERA"
-  : (box.state || "-");
+const stateVisual =
+  Number(box.mode) === 2
+    ? transportStateVisual
+    : (rawState === "IDLE" ? "ESPERA" : (box.state || "-"));
 
 document.getElementById("state").innerText = stateVisual;
 
