@@ -58,6 +58,8 @@ function tr(key) {
     "EXCESO": en ? "EXCESS" : "EXCESO",
     "RECIBIDO": en ? "RECEIVED" : "RECIBIDO",
     "VACIA": en ? "EMPTY" : "VACIA",
+    "IDLE": en ? "WAIT" : "ESPERA",
+    "SIN_BASE": en ? "NO_BASE" : "SIN_BASE",
 
     "META": en ? "TARGET" : "META",
     "CARGANDO": en ? "LOADING" : "CARGANDO",
