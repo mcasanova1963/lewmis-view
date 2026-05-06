@@ -25,6 +25,50 @@ let currentLang = "ES";
   if (Math.abs(v) < 1) return Math.round(v * 1000) + " g";
   return v.toFixed(2) + " kg";
 }
+// =========================
+// TRADUCCION WEB
+// Devuelve texto según idioma.
+// =========================
+function tr(key) {
+  const en = currentLang === "EN";
+
+  const map = {
+    "Campo": en ? "Field" : "Campo",
+    "Transporte": en ? "Transport" : "Transporte",
+    "Inventario": en ? "Inventory" : "Inventario",
+    "Retail": "Retail",
+
+    "Peso": en ? "Weight" : "Peso",
+    "Actual": en ? "Current" : "Actual",
+    "Llevas": en ? "Taken" : "Llevas",
+
+    "Valor": en ? "Value" : "Valor",
+    "A pagar": en ? "To pay" : "A pagar",
+
+    "Meta": en ? "Target" : "Meta",
+
+    "Base": en ? "Base" : "Base",
+    "Delta": "Delta",
+
+    "Estado": en ? "Status" : "Estado",
+
+    "ESPERA": en ? "WAIT" : "ESPERA",
+    "OK": "OK",
+    "FALTANTE": en ? "MISSING" : "FALTANTE",
+    "EXCESO": en ? "EXCESS" : "EXCESO",
+    "RECIBIDO": en ? "RECEIVED" : "RECIBIDO",
+    "VACIA": en ? "EMPTY" : "VACIA",
+
+    "META": en ? "TARGET" : "META",
+    "CARGANDO": en ? "LOADING" : "CARGANDO",
+
+    "Última actualización:": en
+      ? "Last update:"
+      : "Última actualización:"
+  };
+
+  return map[key] || key;
+}
 
   function getWeightLabel(mode) {
     switch (Number(mode)) {
