@@ -64,6 +64,12 @@ function tr(key) {
     "IDLE": en ? "WAIT" : "ESPERA",
     "SIN_BASE": en ? "NO_BASE" : "SIN_BASE",
 
+    "Producto": en ? "Product" : "Producto",
+    "Precio": en ? "Price" : "Precio",
+    "Salida": en ? "Out" : "Salida",
+    "Sensor": en ? "Sensor" : "Sensor",
+    "Batería": en ? "Battery" : "Batería",
+      
     "META": en ? "TARGET" : "META",
     "CARGANDO": en ? "LOADING" : "CARGANDO",
 
@@ -123,6 +129,21 @@ function tr(key) {
       // Lee ES/EN enviado por Android.
       // =========================
       currentLang = (box.lang || "ES").toString().trim().toUpperCase();
+      // =========================
+      // WEB - ETIQUETAS FIJAS TRADUCIDAS
+      // Traduce textos que vienen escritos en index.html.
+      // =========================
+      document.getElementById("labelProduct").innerText = tr("Producto");
+      document.getElementById("labelPrice").innerText = tr("Precio"); 
+      document.getElementById("labelTransportBase").innerText = tr("Salida");
+      document.getElementById("labelTransportDelta").innerText = tr("Delta");
+      document.getElementById("labelFieldTarget").innerText = tr("Meta");
+      document.getElementById("labelInventoryBase").innerText = tr("Base");
+      document.getElementById("labelInventoryDelta").innerText = tr("Delta");
+      document.getElementById("labelState").innerText = tr("Estado");
+      document.getElementById("labelSensor").innerText = tr("Sensor");
+      document.getElementById("labelBattery").innerText = tr("Batería");
+      
 
     console.log("UNIT FROM DB:", box.unit);
 
