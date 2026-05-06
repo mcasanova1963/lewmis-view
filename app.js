@@ -142,31 +142,7 @@ function tr(key) {
 
     const fieldExtra = document.getElementById("fieldExtra");
     
-    if (Number(box.mode) === 1) {
-  amountBlock.style.display = "block";
-
-  // =========================
-  // WEB - ETIQUETA VALOR TRADUCIDA
-  // Modo 1 Campo.
-  // =========================
-  amountLabel.innerText = tr("Valor");
-
-  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
-
-  } else if (Number(box.mode) === 4) {
-  amountBlock.style.display = "block";
-
-  // =========================
-  // WEB - ETIQUETA A PAGAR TRADUCIDA
-  // Modo 4 Retail.
-  // =========================
-  amountLabel.innerText = tr("A pagar");
-
-  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
-
-  } else {
-  amountBlock.style.display = "none";
-  }
+    
 
    const transportExtra = document.getElementById("transportExtra");
    const transportDeltaBlock = document.getElementById("transportDeltaBlock");
@@ -245,11 +221,11 @@ const amountLabel = document.getElementById("amountLabel");
 
 if (Number(box.mode) === 1) {
   amountBlock.style.display = "block";
-  amountLabel.innerText = "Valor";
+  amountLabel.innerText = tr("Valor");
   document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
 } else if (Number(box.mode) === 4) {
   amountBlock.style.display = "block";
-  amountLabel.innerText = "A pagar";
+  amountLabel.innerText = tr("A pagar");
   document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
 } else {
   amountBlock.style.display = "none";
@@ -278,21 +254,7 @@ if (stateEl) {
   stateEl.innerText = tr(stateVisual);
 }
 
-// =========================
-// WEB - ESTADO
-// Primero asegura que siempre se muestre algo.
-// =========================
-let stateText = "-";
 
-if (stateVisual !== undefined && stateVisual !== null && stateVisual !== "") {
-  stateText = stateVisual.toString().trim().toUpperCase();
-}
-
-const stateEl = document.getElementById("state");
-
-if (stateEl) {
-  stateEl.innerText = stateText;
-}
 
 const sensorEl = document.getElementById("sensor");
 
