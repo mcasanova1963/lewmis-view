@@ -131,7 +131,11 @@ function tr(key) {
     console.log("FORMATTED WEIGHT:", formattedWeight);
     document.getElementById("weight").innerText = formattedWeight;
 
-    document.getElementById("weightLabel").innerText = getWeightLabel(box.mode);
+    // =========================
+    // ETIQUETA PRINCIPAL DE PESO
+    // Traduce Peso / Actual / Llevas según idioma web.
+    // =========================
+    document.getElementById("weightLabel").innerText =tr(getWeightLabel(box.mode));
     
 
     const fieldExtra = document.getElementById("fieldExtra");
