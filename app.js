@@ -261,6 +261,7 @@ const stateVisual =
   Number(box.mode) === 2
     ? transportStateVisual
     : (rawState === "IDLE" ? "ESPERA" : (box.state || "-"));
+      document.getElementById("state").innerText = stateVisual;
 
 // =========================
 // WEB - ESTADO
