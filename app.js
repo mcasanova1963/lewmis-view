@@ -141,20 +141,30 @@ function tr(key) {
     const fieldExtra = document.getElementById("fieldExtra");
     
     if (Number(box.mode) === 1) {
-    fieldExtra.style.display = "block";
+  amountBlock.style.display = "block";
 
-    const fieldTarget = document.getElementById("fieldTarget");
-    fieldTarget.innerText = formatWeight(box.target_kg || 0, unit);
+  // =========================
+  // WEB - ETIQUETA VALOR TRADUCIDA
+  // Modo 1 Campo.
+  // =========================
+  amountLabel.innerText = tr("Valor");
 
-    if ((box.state || "").toUpperCase() === "META") {
-    fieldTarget.style.color = "#66bb6a"; // verde
-    } else {
-    fieldTarget.style.color = "#ffd54f"; // amarillo
-    }
+  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
 
-    } else {
-    fieldExtra.style.display = "none";
-    }
+  } else if (Number(box.mode) === 4) {
+  amountBlock.style.display = "block";
+
+  // =========================
+  // WEB - ETIQUETA A PAGAR TRADUCIDA
+  // Modo 4 Retail.
+  // =========================
+  amountLabel.innerText = tr("A pagar");
+
+  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+
+  } else {
+  amountBlock.style.display = "none";
+  }
 
    const transportExtra = document.getElementById("transportExtra");
    const transportDeltaBlock = document.getElementById("transportDeltaBlock");
