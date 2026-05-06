@@ -6,7 +6,7 @@ const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
 // Por ahora manual porque Supabase aún no tiene campo lang.
 // Cambiar a "EN" para inglés o "ES" para español.
 // =========================
-let currentLang = "ES";
+let currentLang = "EN";
 
   function formatMoney(value) {
     const n = Number(value || 0);
