@@ -116,7 +116,11 @@ function tr(key) {
 
     console.log("UNIT FROM DB:", box.unit);
 
-    document.getElementById("title").innerText = "LEWMIS - " + getModeLabel(box.mode);
+   // =========================
+   // TITULO WEB - MODO TRADUCIDO
+   // Traduce Campo / Transporte / Inventario / Retail.
+   // =========================
+    document.getElementById("title").innerText ="LEWMIS - " + tr(getModeLabel(box.mode));
     document.getElementById("product").innerText = box.product || "-";
     
 
