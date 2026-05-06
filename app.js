@@ -81,6 +81,11 @@ function tr(key) {
   return map[key] || key;
 }
 
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = text;
+}
+
   function getWeightLabel(mode) {
     switch (Number(mode)) {
       case 1: return "Peso";
@@ -137,10 +142,6 @@ function tr(key) {
 // WEB - HELPER SEGURO PARA TEXTOS
 // Evita que la página se rompa si falta un id en index.html.
 // =========================
-function setText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.innerText = text;
-}
 
 // =========================
 // WEB - ETIQUETAS FIJAS TRADUCIDAS
