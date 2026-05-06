@@ -1,6 +1,12 @@
 const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
 
+// =========================
+// IDIOMA WEB
+// Por ahora manual porque Supabase aún no tiene campo lang.
+// Cambiar a "EN" para inglés o "ES" para español.
+// =========================
+let currentLang = "ES";
 
   function formatMoney(value) {
     const n = Number(value || 0);
