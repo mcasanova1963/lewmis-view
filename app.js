@@ -118,6 +118,11 @@ function tr(key) {
       const demoValue = box.demo_sensor_value || "-";
     
       const unit = (box.unit || "kg").toLowerCase();
+      // =========================
+      // WEB - IDIOMA DESDE SUPABASE
+      // Lee ES/EN enviado por Android.
+      // =========================
+      currentLang = (box.lang || "ES").toString().trim().toUpperCase();
 
     console.log("UNIT FROM DB:", box.unit);
 
