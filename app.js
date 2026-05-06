@@ -44,6 +44,9 @@ function tr(key) {
 
     "Valor": en ? "Value" : "Valor",
     "A pagar": en ? "To pay" : "A pagar",
+    "A PAGAR": en ? "TO PAY" : "A PAGAR",
+    "PESANDO": en ? "WEIGHING" : "PESANDO",
+    "LISTO": en ? "READY" : "LISTO",
 
     "Meta": en ? "Target" : "Meta",
 
