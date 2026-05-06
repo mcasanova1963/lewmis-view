@@ -260,7 +260,15 @@ const stateVisual =
     ? transportStateVisual
     : (rawState === "IDLE" ? "ESPERA" : (box.state || "-"));
 
-document.getElementById("state").innerText = stateVisual;
+// =========================
+// WEB - ESTADO TRADUCIDO
+// Normaliza texto antes de traducir.
+// =========================
+const stateText =
+  (stateVisual || "-").toString().trim().toUpperCase();
+
+document.getElementById("state").innerText =
+  tr(stateText);
 
 const sensorEl = document.getElementById("sensor");
 
