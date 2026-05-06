@@ -263,14 +263,20 @@ const stateVisual =
     : (rawState === "IDLE" ? "ESPERA" : (box.state || "-"));
 
 // =========================
-// WEB - ESTADO TRADUCIDO
-// Normaliza texto antes de traducir.
+// WEB - ESTADO
+// Primero asegura que siempre se muestre algo.
 // =========================
-const stateText =
-  (stateVisual || "-").toString().trim().toUpperCase();
+let stateText = "-";
 
-document.getElementById("state").innerText =
-  tr(stateText);
+if (stateVisual !== undefined && stateVisual !== null && stateVisual !== "") {
+  stateText = stateVisual.toString().trim().toUpperCase();
+}
+
+const stateEl = document.getElementById("state");
+
+if (stateEl) {
+  stateEl.innerText = stateText;
+}
 
 const sensorEl = document.getElementById("sensor");
 
