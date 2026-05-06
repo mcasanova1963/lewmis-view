@@ -133,16 +133,29 @@ function tr(key) {
       // WEB - ETIQUETAS FIJAS TRADUCIDAS
       // Traduce textos que vienen escritos en index.html.
       // =========================
-      document.getElementById("labelProduct").innerText = tr("Producto");
-      document.getElementById("labelPrice").innerText = tr("Precio"); 
-      document.getElementById("labelTransportBase").innerText = tr("Salida");
-      document.getElementById("labelTransportDelta").innerText = tr("Delta");
-      document.getElementById("labelFieldTarget").innerText = tr("Meta");
-      document.getElementById("labelInventoryBase").innerText = tr("Base");
-      document.getElementById("labelInventoryDelta").innerText = tr("Delta");
-      document.getElementById("labelState").innerText = tr("Estado");
-      document.getElementById("labelSensor").innerText = tr("Sensor");
-      document.getElementById("labelBattery").innerText = tr("Batería");
+      // =========================
+// WEB - HELPER SEGURO PARA TEXTOS
+// Evita que la página se rompa si falta un id en index.html.
+// =========================
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = text;
+}
+
+// =========================
+// WEB - ETIQUETAS FIJAS TRADUCIDAS
+// Traduce textos escritos en index.html.
+// =========================
+setText("labelProduct", tr("Producto"));
+setText("labelPrice", tr("Precio"));
+setText("labelTransportBase", tr("Salida"));
+setText("labelTransportDelta", tr("Delta"));
+setText("labelFieldTarget", tr("Meta"));
+setText("labelInventoryBase", tr("Base"));
+setText("labelInventoryDelta", tr("Delta"));
+setText("labelState", tr("Estado"));
+setText("labelSensor", tr("Sensor"));
+setText("labelBattery", tr("Batería"));
       
 
     console.log("UNIT FROM DB:", box.unit);
