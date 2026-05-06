@@ -255,13 +255,28 @@ if (Number(box.mode) === 1) {
   amountBlock.style.display = "none";
 }
 
- const rawState = (box.state || "").toString().trim().toUpperCase();
+// =========================
+// WEB - ESTADO VISUAL
+// Calcula siempre un estado visible.
+// Traduce solo después de tener un valor seguro.
+// =========================
+const rawState = (box.state || "-").toString().trim().toUpperCase();
 
-const stateVisual =
-  Number(box.mode) === 2
-    ? transportStateVisual
-    : (rawState === "IDLE" ? "ESPERA" : (box.state || "-"));
-      document.getElementById("state").innerText = stateVisual;
+let stateVisual = "-";
+
+if (Number(box.mode) === 2) {
+  stateVisual = transportStateVisual || "-";
+} else if (rawState === "IDLE") {
+  stateVisual = "ESPERA";
+} else {
+  stateVisual = rawState;
+}
+
+const stateEl = document.getElementById("state");
+
+if (stateEl) {
+  stateEl.innerText = tr(stateVisual);
+}
 
 // =========================
 // WEB - ESTADO
