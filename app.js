@@ -273,8 +273,11 @@ if (sensorEl) {
   box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
 
   const d = new Date(Number(box.updated_at));
-  document.getElementById("updated").innerText =
-  "Última actualización: " + d.toLocaleString("es-CO");
+  // =========================
+  // WEB - ULTIMA ACTUALIZACION TRADUCIDA
+  // Usa el idioma manual actual de la web.
+  // =========================
+  document.getElementById("updated").innerText =tr("Última actualización:") + " " + d.toLocaleString("es-CO");
   }
   loadBoxStatus(); 
   setInterval(loadBoxStatus, 1000);
