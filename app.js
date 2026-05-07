@@ -187,8 +187,8 @@ setText("labelBattery", tr("Batería"));
     
     
 
-   const transportExtra = document.getElementById("transportExtra");
-   const transportDeltaBlock = document.getElementById("transportDeltaBlock");
+    const transportExtra = document.getElementById("transportExtra");
+    const transportDeltaBlock = document.getElementById("transportDeltaBlock");
     let transportStateVisual = (box.state || "-").toString().trim().toUpperCase();
 
    if (transportStateVisual === "IDLE") {
@@ -204,15 +204,15 @@ setText("labelBattery", tr("Batería"));
 
   const transportState = (box.state || "").toString().trim().toUpperCase();
 
- const deltaKg = Number(box.transport_delta_kg || 0);
-const deltaGrams = Math.round((deltaKg * 1000) / 10) * 10;
+  const deltaKg = Number(box.transport_delta_kg || 0);
+  const deltaGrams = Math.round((deltaKg * 1000) / 10) * 10;
 
 
-if (transportState === "IDLE") {
+  if (transportState === "IDLE") {
   transportStateVisual = "ESPERA";
-}
+  }
 
-if (
+  if (
   transportState === "OK" ||
   transportState === "FALTANTE" ||
   transportState === "EXCESO" ||
@@ -263,17 +263,33 @@ const amountBlock = document.getElementById("amountBlock");
 const amountLabel = document.getElementById("amountLabel");
 
 if (Number(box.mode) === 1) {
+
   amountBlock.style.display = "block";
   amountLabel.innerText = tr("Valor");
   document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
+
+  // =========================
+  // CAMPO - MOSTRAR META
+  // =========================
+  fieldExtra.style.display = "block";
+
+  document.getElementById("fieldTarget").innerText =
+    formatWeight(box.target_kg || 0, unit);
+
 } else if (Number(box.mode) === 4) {
+
   amountBlock.style.display = "block";
   amountLabel.innerText = tr("A pagar");
-  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
-} else {
-  amountBlock.style.display = "none";
-}
+  document.getElementById("amount").innerText =
+    formatMoney(box.amount_to_pay);
 
+  fieldExtra.style.display = "none";
+
+} else {
+
+  amountBlock.style.display = "none";
+  fieldExtra.style.display = "none";
+}
 // =========================
 // WEB - ESTADO VISUAL
 // Calcula siempre un estado visible.
