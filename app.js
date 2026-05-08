@@ -68,6 +68,7 @@ function tr(key) {
     "Precio": en ? "Price" : "Precio",
     "Salida": en ? "Out" : "Salida",
     "Sensor": en ? "Sensor" : "Sensor",
+    "Caja": en ? "Box" : "Caja",
     "Batería": en ? "Battery" : "Batería",
       
     "META": en ? "TARGET" : "META",
@@ -156,6 +157,7 @@ setText("labelInventoryBase", tr("Base"));
 setText("labelInventoryDelta", tr("Delta"));
 setText("labelState", tr("Estado"));
 setText("labelSensor", tr("Sensor"));
+setText("labelBox", tr("Caja"));
 setText("labelBattery", tr("Batería"));
       
 
@@ -167,6 +169,11 @@ setText("labelBattery", tr("Batería"));
    // =========================
     document.getElementById("title").innerText ="LEWMIS - " + tr(getModeLabel(box.mode));
     document.getElementById("product").innerText = box.product || "-";
+    // =========================
+    // WEB - BOX ID
+    // Muestra el identificador único de la caja.
+    // =========================
+    document.getElementById("boxId").innerText = box.box_id || "-";
     
 
     document.getElementById("price").innerText =
