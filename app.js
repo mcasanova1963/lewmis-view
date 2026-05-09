@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
 
 // =========================
 // IDIOMA WEB
@@ -63,6 +63,11 @@ function tr(key) {
     "VACIA": en ? "EMPTY" : "VACIA",
     "IDLE": en ? "WAIT" : "ESPERA",
     "SIN_BASE": en ? "NO_BASE" : "SIN_BASE",
+
+    "Evento": en ? "Event" : "Evento",
+    "RETIRO": en ? "REMOVED" : "RETIRO",
+    "ADICION": en ? "ADDED" : "ADICION",
+    "MANIPULADA": en ? "HANDLED" : "MANIPULADA",
 
     "Producto": en ? "Product" : "Producto",
     "Precio": en ? "Price" : "Precio",
@@ -140,26 +145,26 @@ function setText(id, text) {
       // Traduce textos que vienen escritos en index.html.
       // =========================
       // =========================
-// WEB - HELPER SEGURO PARA TEXTOS
-// Evita que la página se rompa si falta un id en index.html.
-// =========================
+ // WEB - HELPER SEGURO PARA TEXTOS
+ // Evita que la página se rompa si falta un id en index.html.
+ // =========================
 
-// =========================
-// WEB - ETIQUETAS FIJAS TRADUCIDAS
-// Traduce textos escritos en index.html.
-// =========================
-setText("labelProduct", tr("Producto"));
-setText("labelPrice", tr("Precio"));
-setText("labelTransportBase", tr("Salida"));
-setText("labelTransportDelta", tr("Delta"));
-setText("labelFieldTarget", tr("Meta"));
-setText("labelInventoryBase", tr("Base"));
-setText("labelInventoryDelta", tr("Delta"));
-setText("labelState", tr("Estado"));
-setText("labelSensor", tr("Sensor"));
-setText("labelBox", tr("Caja"));
-setText("labelBattery", tr("Batería"));
-      
+ // =========================
+ // WEB - ETIQUETAS FIJAS TRADUCIDAS
+ // Traduce textos escritos en index.html.
+ // =========================
+ setText("labelProduct", tr("Producto"));
+ setText("labelPrice", tr("Precio"));
+ setText("labelTransportBase", tr("Salida"));
+ setText("labelTransportDelta", tr("Delta"));
+ setText("labelFieldTarget", tr("Meta"));
+ setText("labelInventoryBase", tr("Base"));
+ setText("labelInventoryDelta", tr("Delta"));
+ setText("labelState", tr("Estado"));
+ setText("labelSensor", tr("Sensor"));
+ setText("labelBox", tr("Caja"));
+ setText("labelBattery", tr("Batería"));
+ setText("labelInventoryEvent", tr("Evento"));     
 
     console.log("UNIT FROM DB:", box.unit);
 
@@ -261,6 +266,9 @@ if (Number(box.mode) === 3) {
 
   document.getElementById("inventoryDelta").innerText =
     formatWeight(box.inventory_delta_kg || 0, unit);
+
+  document.getElementById("inventoryEvent").innerText =
+  tr((box.inventory_event || "-").toString().trim().toUpperCase());
 
 } else {
   inventoryExtra.style.display = "none";
