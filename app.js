@@ -45,6 +45,7 @@ function tr(key) {
     "Valor": en ? "Value" : "Valor",
     "A pagar": en ? "To pay" : "A pagar",
     "A PAGAR": en ? "TO PAY" : "A PAGAR",
+    "PAGAR_AHORA": en ? "PAY NOW" : "PAGAR AHORA",
     "PESANDO": en ? "WEIGHING" : "PESANDO",
     "LISTO": en ? "READY" : "LISTO",
 
@@ -345,7 +346,20 @@ if (Number(box.mode) === 2) {
 const stateEl = document.getElementById("state");
 
 if (stateEl) {
-  stateEl.innerText = tr(stateVisual);
+  stateEl.classList.remove("pay-alert");
+
+  if (
+    Number(box.mode) === 4 &&
+    (
+      stateVisual === "A PAGAR" ||
+      stateVisual === "TO PAY"
+    )
+  ) {
+    stateEl.innerText = tr("PAGAR_AHORA");
+    stateEl.classList.add("pay-alert");
+  } else {
+    stateEl.innerText = tr(stateVisual);
+  }
 }
 
 
