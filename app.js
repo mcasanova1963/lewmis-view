@@ -159,6 +159,7 @@ function setText(id, text) {
  setText("labelTransportDelta", tr("Delta"));
  setText("labelFieldTarget", tr("Meta"));
  setText("labelInventoryBase", tr("Base"));
+ setText("labelTransportActual", tr("Actual"));
  setText("labelInventoryDelta", tr("Delta"));
  setText("labelState", tr("Estado"));
  setText("labelSensor", tr("Sensor"));
@@ -200,7 +201,9 @@ function setText(id, text) {
     
 
     const transportExtra = document.getElementById("transportExtra");
+    const transportActualBlock = document.getElementById("transportActualBlock");
     const transportDeltaBlock = document.getElementById("transportDeltaBlock");
+    
     let transportStateVisual = (box.state || "-").toString().trim().toUpperCase();
 
    if (transportStateVisual === "IDLE") {
@@ -209,10 +212,13 @@ function setText(id, text) {
 
   if (Number(box.mode) === 2) {
   transportExtra.style.display = "block";
+  transportActualBlock.style.display = "block";
   transportDeltaBlock.style.display = "block";
 
   document.getElementById("transportBase").innerText =
     formatWeight(box.transport_base_kg || 0, unit);
+  document.getElementById("transportActual").innerText =
+    formatWeight(box.transport_actual_kg ?? box.weight_kg ?? 0, unit);
 
   const transportState = (box.state || "").toString().trim().toUpperCase();
 
@@ -253,6 +259,7 @@ function setText(id, text) {
 
 } else {
   transportExtra.style.display = "none";
+  transportActualBlock.style.display = "none";
   transportDeltaBlock.style.display = "none";
 }
 
