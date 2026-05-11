@@ -197,7 +197,17 @@ function setText(id, text) {
     
 
     const fieldExtra = document.getElementById("fieldExtra");
+    const weightBlock = document.getElementById("weightBlock");
     
+    if (
+    Number(box.mode) === 1 ||
+    Number(box.mode) === 3 ||
+    Number(box.mode) === 4
+    ) {
+    weightBlock.style.display = "block";
+    } else {
+    weightBlock.style.display = "none";
+    }
     
 
     const transportExtra = document.getElementById("transportExtra");
