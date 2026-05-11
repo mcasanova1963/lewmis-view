@@ -7,6 +7,8 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Cambiar a "EN" para inglés o "ES" para español.
 // =========================
 let currentLang = "EN";
+let retailPayHoldUntil = 0;
+let retailLastPayState = false;
 
   function formatMoney(value) {
     const n = Number(value || 0);
@@ -326,20 +328,42 @@ if (Number(box.mode) === 1) {
   amountBlock.style.display = "none";
   fieldExtra.style.display = "none";
 }
-// =========================
-// WEB - ESTADO VISUAL
-// Calcula siempre un estado visible.
-// Traduce solo después de tener un valor seguro.
-// =========================
-const rawState = (box.state || "-").toString().trim().toUpperCase();
+  // =========================
+  // WEB - ESTADO VISUAL
+  // Calcula siempre un estado visible.
+  // Traduce solo después de tener un valor seguro.
+  // =========================
+  const rawState = (box.state || "-").toString().trim().toUpperCase();
+ if (
+  Number(box.mode) === 4 &&
+  rawState === "A PAGAR"
+) {
+  retailPayHoldUntil = Date.now() + 2000;
+  retailLastPayState = true;
+  }
 
 let stateVisual = "-";
 
 if (Number(box.mode) === 2) {
+
   stateVisual = transportStateVisual || "-";
+
+} else if (
+  Number(box.mode) === 4 &&
+  retailLastPayState &&
+  Date.now() < retailPayHoldUntil
+) {
+
+  stateVisual = "A PAGAR";
+
 } else if (rawState === "IDLE") {
+
+  retailLastPayState = false;
   stateVisual = "ESPERA";
+
 } else {
+
+  retailLastPayState = false;
   stateVisual = rawState;
 }
 
