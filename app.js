@@ -159,6 +159,7 @@ function setText(id, text) {
  setText("labelTransportDelta", tr("Delta"));
  setText("labelFieldTarget", tr("Meta"));
  setText("labelInventoryBase", tr("Base"));
+ setText("labelInventoryWeight", tr("Peso"));
  setText("labelTransportActual", tr("Actual"));
  setText("labelInventoryDelta", tr("Delta"));
  setText("labelState", tr("Estado"));
@@ -201,7 +202,6 @@ function setText(id, text) {
     
     if (
     Number(box.mode) === 1 ||
-    Number(box.mode) === 3 ||
     Number(box.mode) === 4
     ) {
     weightBlock.style.display = "block";
@@ -280,6 +280,9 @@ if (Number(box.mode) === 3) {
 
   document.getElementById("inventoryBase").innerText =
     formatWeight(box.inventory_base_kg || 0, unit);
+
+  document.getElementById("inventoryWeight").innerText =
+  formatWeight(box.weight_kg || 0, unit);
 
   document.getElementById("inventoryDelta").innerText =
     formatWeight(box.inventory_delta_kg || 0, unit);
