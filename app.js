@@ -124,7 +124,23 @@ function setText(id, text) {
   }
 
   async function loadBoxStatus() {
-    const url = SUPABASE_URL + "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=1";
+   // =========================
+   // DASHBOARD MULTI-CAJA
+   // Si estamos en dashboard:
+   //
+   // - leer varias cajas
+   //
+   // Si estamos en vista individual:
+   //
+   // - leer solo la más reciente
+   // =========================
+   const url = dashboardMode
+
+  ? SUPABASE_URL +
+    "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=50"
+
+  : SUPABASE_URL +
+    "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=1";
 
     const res = await fetch(url, {
       headers: {
