@@ -168,6 +168,9 @@ function setText(id, text) {
  setText("labelState", tr("Estado"));
  setText("labelSensor", tr("Sensor"));
  setText("labelBox", tr("Caja"));
+ setText("labelSerial", "SN");
+ document.getElementById("serialNumber").innerText =
+  box.serial_number || "-";
  setText("labelBattery", tr("Batería"));
  setText("labelInventoryEvent", tr("Evento"));     
 
