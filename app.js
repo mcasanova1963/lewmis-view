@@ -150,6 +150,17 @@ function setText(id, text) {
     });
 
     const data = await res.json();
+
+    // =========================
+    // DASHBOARD MULTI-CAJA
+    // Si estamos en modo dashboard,
+    // mandamos todas las filas a la tabla
+    // y detenemos aquí la vista individual.
+    // =========================
+    if (dashboardMode) {
+    renderDashboard(data);
+    return;
+    }
   
     if (!data || data.length === 0) {
       document.getElementById("state").innerText = "SIN DATOS";
