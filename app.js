@@ -43,6 +43,7 @@ function tr(key) {
   const en = currentLang === "EN";
 
   const map = {
+    "Modo": en ? "Mode" : "Modo",
     "Campo": en ? "Field" : "Campo",
     "Transporte": en ? "Transport" : "Transporte",
     "Inventario": en ? "Inventory" : "Inventario",
