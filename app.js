@@ -500,6 +500,15 @@ if (sensorEl) {
       dashboardMode
         ? "Vista individual"
         : "Dashboard";
+    // =========================
+    // TITULO SEGUN VISTA
+    // En dashboard no mostramos modo,
+    // porque es una vista general multi-caja.
+   // =========================
+   document.getElementById("title").innerText =
+  dashboardMode
+    ? "LEWMIS Dashboard"
+    : "LEWMIS";
   });
 
 });
