@@ -482,5 +482,106 @@ if (sensorEl) {
   });
 
 });
+// =========================
+// RENDER DASHBOARD
+// Llena la tabla multi-caja
+// usando todas las filas recibidas
+// desde Supabase.
+// =========================
+function renderDashboard(rows) {
+
+  const tbody = document.getElementById("dashboardRows");
+
+  if (!tbody) return;
+
+  // =========================
+  // LIMPIAR TABLA
+  // =========================
+  tbody.innerHTML = "";
+
+  // =========================
+  // SIN DATOS
+  // =========================
+  if (!rows || rows.length === 0) {
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" style="
+          padding:12px;
+          color:#90a4ae;
+        ">
+          Sin cajas activas
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  // =========================
+  // CREAR UNA FILA POR CAJA
+  // =========================
+  rows.forEach(box => {
+
+    const unit =
+      (box.unit || "kg").toLowerCase();
+
+    const modeLabel =
+      tr(getModeLabel(box.mode));
+
+    const weight =
+      formatWeight(box.weight_kg || 0, unit);
+
+    const state =
+      tr((box.state || "-")
+      .toString()
+      .trim()
+      .toUpperCase());
+
+    const battery =
+      box.battery_percent >= 0
+        ? box.battery_percent + "%"
+        : "-";
+
+    // =========================
+    // CREAR FILA HTML
+    // =========================
+    const trRow =
+      document.createElement("tr");
+
+    trRow.style.borderTop =
+      "1px solid #263238";
+
+    trRow.innerHTML = `
+      <td style="padding:8px;">
+        ${box.box_id || "-"}
+      </td>
+
+      <td style="padding:8px;">
+        ${box.product || "-"}
+      </td>
+
+      <td style="padding:8px;">
+        ${modeLabel}
+      </td>
+
+      <td style="padding:8px;">
+        ${weight}
+      </td>
+
+      <td style="padding:8px;">
+        ${state}
+      </td>
+
+      <td style="padding:8px;">
+        ${battery}
+      </td>
+    `;
+
+    tbody.appendChild(trRow);
+
+  });
+
+}
   loadBoxStatus(); 
   setInterval(loadBoxStatus, 1000);
