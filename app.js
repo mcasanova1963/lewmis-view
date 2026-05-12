@@ -553,30 +553,53 @@ function renderDashboard(rows) {
       "1px solid #263238";
 
     trRow.innerHTML = `
-      <td style="padding:8px;">
-        ${box.box_id || "-"}
-      </td>
 
-      <td style="padding:8px;">
-        ${box.product || "-"}
-      </td>
+  <td style="
+    padding:8px;
+    white-space:nowrap;
+    min-width:110px;
+    font-weight:bold;
+  ">
+    ${box.box_id || "-"}
+  </td>
 
-      <td style="padding:8px;">
-        ${modeLabel}
-      </td>
+  <td style="
+    padding:8px;
+    white-space:nowrap;
+    min-width:90px;
+  ">
+    ${box.product || "-"}
+  </td>
 
-      <td style="padding:8px;">
-        ${weight}
-      </td>
+  <td style="
+    padding:8px;
+    white-space:nowrap;
+  ">
+    ${modeLabel}
+  </td>
 
-      <td style="padding:8px;">
-        ${state}
-      </td>
+  <td style="
+    padding:8px;
+    white-space:nowrap;
+    min-width:80px;
+  ">
+    ${weight}
+  </td>
 
-      <td style="padding:8px;">
-        ${battery}
-      </td>
-    `;
+  <td style="
+    padding:8px;
+    white-space:nowrap;
+  ">
+    ${state}
+  </td>
+
+  <td style="
+    padding:8px;
+    white-space:nowrap;
+  ">
+    ${battery}
+  </td>
+`;
 
     tbody.appendChild(trRow);
 
