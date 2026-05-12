@@ -227,7 +227,16 @@ setText("thBattery", tr("Batería"));
    // TITULO WEB - MODO TRADUCIDO
    // Traduce Campo / Transporte / Inventario / Retail.
    // =========================
-    document.getElementById("title").innerText ="LEWMIS - " + tr(getModeLabel(box.mode));
+    // =========================
+   // TITULO PRINCIPAL
+   // Dashboard multi-caja usa
+   // un título general.
+   // Vista individual usa modo.
+   // =========================
+   document.getElementById("title").innerText =
+  dashboardMode
+    ? "LEWMIS Dashboard"
+    : "LEWMIS - " + tr(getModeLabel(box.mode));
     document.getElementById("product").innerText = box.product || "-";
     // =========================
     // WEB - BOX ID
