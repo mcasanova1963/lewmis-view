@@ -7,6 +7,14 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Cambiar a "EN" para inglés o "ES" para español.
 // =========================
 let currentLang = "EN";
+// =========================
+// DASHBOARD MULTI-CAJA
+// Controla si estamos viendo:
+//
+// false = vista individual
+// true  = dashboard multi-caja
+// =========================
+let dashboardMode = false;
 let retailPayHoldUntil = 0;
 let retailLastPayState = false;
 
@@ -411,5 +419,41 @@ if (sensorEl) {
   // =========================
   document.getElementById("updated").innerText =tr("Última actualización:") + " " + d.toLocaleString("es-CO");
   }
+  // =========================
+  // BOTON DASHBOARD
+  // Alterna entre:
+  //
+  // - Vista individual
+  // - Dashboard multi-caja
+  // =========================
+  document.addEventListener("DOMContentLoaded", () => {
+
+  const btn = document.getElementById("btnDashboard");
+
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+
+    dashboardMode = !dashboardMode;
+
+    // =========================
+    // MOSTRAR / OCULTAR VISTAS
+    // =========================
+    document.getElementById("singleView").style.display =
+      dashboardMode ? "none" : "block";
+
+    document.getElementById("dashboardView").style.display =
+      dashboardMode ? "block" : "none";
+
+    // =========================
+    // CAMBIAR TEXTO BOTON
+    // =========================
+    btn.innerText =
+      dashboardMode
+        ? "Vista individual"
+        : "Dashboard";
+  });
+
+});
   loadBoxStatus(); 
   setInterval(loadBoxStatus, 1000);
