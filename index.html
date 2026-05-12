@@ -188,9 +188,48 @@
 
     <div class="small" id="updated">Última actualización: -</div>
     </div>
+  <!-- =========================
+     DASHBOARD MULTI-CAJA
+     Aquí aparecerá la tabla con todas
+     las cajas activas de la finca.
+     Inicialmente oculto.
+========================= -->
+<div id="dashboardView" style="display:none;">
+
+  <div class="label">
+    Cajas activas
   </div>
 
+  <table style="
+    width:100%;
+    border-collapse:collapse;
+    margin-top:12px;
+    font-size:14px;
+  ">
 
-  <script src="app.js?v=5"></script>
+    <thead>
+      <tr style="
+        color:#4fc3f7;
+        text-align:left;
+      ">
+        <th>Caja</th>
+        <th>Producto</th>
+        <th>Modo</th>
+        <th>Peso</th>
+        <th>Estado</th>
+        <th>Bat</th>
+      </tr>
+    </thead>
+
+    <tbody id="dashboardRows">
+    </tbody>
+
+  </table>
+
+</div>
+
+</div>
+
+<script src="app.js?v=5"></script>
 </body>
 </html>
