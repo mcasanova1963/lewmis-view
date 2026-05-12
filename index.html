@@ -93,18 +93,44 @@
 <body>
   <div class="card">
     <h1 id="title">LEWMIS</h1>
-    <button id="btnDashboard" style="
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#4fc3f7;
-  color:#001018;
-  font-weight:bold;
+    <!-- =========================
+     BOTONES DE VISTA
+     Dashboard = vista multi-caja
+     Retail interactivo = experiencia cliente
+     Solo se activará cuando la caja esté en modo Retail
+========================= -->
+<div style="
+  display:flex;
+  gap:10px;
   margin-bottom:16px;
 ">
-  Dashboard
-</button>
+
+  <button id="btnDashboard" style="
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#4fc3f7;
+    color:#001018;
+    font-weight:bold;
+  ">
+    Dashboard
+  </button>
+
+  <button id="btnRetailInteractive" disabled style="
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    background:#455a64;
+    color:#cfd8dc;
+    font-weight:bold;
+    opacity:0.55;
+  ">
+    Retail interactivo
+  </button>
+
+</div>
      <!-- =========================
      VISTA INDIVIDUAL
      Toda la UI actual de una sola caja.
