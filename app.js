@@ -207,7 +207,18 @@ function setText(id, text) {
  document.getElementById("serialNumber").innerText =
   box.serial_number || "-";
  setText("labelBattery", tr("Batería"));
- setText("labelInventoryEvent", tr("Evento"));     
+ setText("labelInventoryEvent", tr("Evento"));
+// =========================
+// DASHBOARD - ENCABEZADOS
+// Traducción de columnas
+// multi-caja.
+// =========================
+setText("thBox", tr("Caja"));
+setText("thProduct", tr("Producto"));
+setText("thMode", tr("Modo"));
+setText("thWeight", tr("Peso"));
+setText("thState", tr("Estado"));
+setText("thBattery", tr("Batería"));
 
     console.log("UNIT FROM DB:", box.unit);
 
