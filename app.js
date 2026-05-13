@@ -674,15 +674,23 @@ btn.innerText = "Seguir comprando";
 
   processedRetailEvents.add(eventKey);
 
-  retailCart.push({
-    box_id: box.box_id || "-",
-    product: box.product || "-",
-    weight_kg: Number(box.weight_kg || 0),
-    amount_to_pay: Number(box.amount_to_pay || 0),
-    unit: (box.unit || "kg").toLowerCase(),
-    updated_at: box.updated_at || Date.now()
-  });
-    console.log("CARRITO ACTUAL:", retailCart);
+ retailCart.push({
+  box_id: box.box_id || "-",
+  product: box.product || "-",
+  weight_kg: Number(box.weight_kg || 0),
+  amount_to_pay: Number(box.amount_to_pay || 0),
+  unit: (box.unit || "kg").toLowerCase(),
+  updated_at: box.updated_at || Date.now()
+});
+
+// =========================
+// ACTUALIZAR UI DEL CARRITO
+// inmediatamente después
+// de agregar una compra.
+// =========================
+renderRetailCart();
+
+console.log("CARRITO ACTUAL:", retailCart);
 }
 
 // =========================
