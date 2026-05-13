@@ -232,7 +232,18 @@ function setText(id, text) {
     // Esto es más confiable que depender
     // solo del texto del estado.
     // =========================
-   if (
+   // =========================
+// RETAIL INTERACTIVO
+// Captura SOLO cuando:
+//
+// - estamos en Retail
+// - estado final de pago
+// - no estamos en cooldown
+//
+// Esto evita múltiples compras
+// falsas mientras el peso fluctúa.
+// =========================
+if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
   (
@@ -241,9 +252,38 @@ function setText(id, text) {
     retailState === "PAGAR AHORA"
   )
 ) {
-  addRetailCartItem(box);
-  renderRetailCart();
-  console.log("RETAIL CART:", retailCart);
+
+  const boxKey =
+    box.box_id || "UNKNOWN_BOX";
+
+  const now = Date.now();
+
+  const cooldownUntil =
+    retailBoxCooldown[boxKey] || 0;
+
+  // =========================
+  // SOLO SI NO ESTA BLOQUEADA
+  // =========================
+  if (now > cooldownUntil) {
+
+    addRetailCartItem(box);
+
+    renderRetailCart();
+
+    console.log(
+      "RETAIL CART:",
+      retailCart
+    );
+
+    // =========================
+    // BLOQUEAR ESTA CAJA
+    // DURANTE 4 SEGUNDOS
+    // =========================
+    retailBoxCooldown[boxKey] =
+      now + 4000;
+
+  }
+
 }
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
