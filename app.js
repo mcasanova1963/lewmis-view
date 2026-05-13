@@ -170,6 +170,19 @@ function setText(id, text) {
     console.log("SUPABASE DATA:", data);
       
     const box = data[0];
+
+    // =========================
+    // RETAIL INTERACTIVO
+    // Muestra el botón "Ver compra"
+    // solo cuando la caja actual
+    // está en modo Retail.
+    // =========================
+    const btnRetailView = document.getElementById("btnRetailView");
+
+if (btnRetailView) {
+  btnRetailView.style.display =
+    Number(box.mode) === 4 ? "block" : "none";
+}
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
     
