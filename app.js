@@ -348,11 +348,56 @@ if (
   // =========================
   // SOLO SI NO ESTA BLOQUEADA
   // =========================
-  if (now > cooldownUntil) {
+ if (now > cooldownUntil) {
 
-    addRetailCartItem(box);
+  const boxKey =
+    box.box_id || "UNKNOWN_BOX";
+
+  // =========================
+  // GUARDAR CANDIDATO
+  // Esperamos un poco antes
+  // de confirmar la compra.
+  // =========================
+  retailPendingByBox[boxKey] = {
+    box: { ...box },
+    capturedAt: now
+  };
+
+  // =========================
+  // ESPERAR ESTABILIZACION
+  // =========================
+  setTimeout(() => {
+
+    const pending =
+      retailPendingByBox[boxKey];
+
+    if (!pending) return;
+
+    // =========================
+    // AGREGAR VALOR FINAL
+    // =========================
+    addRetailCartItem(
+      pending.box
+    );
 
     renderRetailCart();
+
+    console.log(
+      "RETAIL ESTABLE:",
+      pending.box
+    );
+
+    // =========================
+    // COOLDOWN
+    // =========================
+    retailBoxCooldown[boxKey] =
+      Date.now() + 4000;
+
+    delete retailPendingByBox[boxKey];
+
+  }, 1200);
+
+}
 
     console.log(
       "RETAIL CART:",
