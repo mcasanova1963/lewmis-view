@@ -625,7 +625,22 @@ if (btnRetailView) {
       "none";
 
     document.getElementById("retailView").style.display =
-      "block";
+  "block";
+
+console.log(
+  "RETAIL VIEW ELEMENT:",
+  document.getElementById("retailView")
+);
+
+console.log(
+  "RETAIL CART ELEMENT:",
+  document.getElementById("retailCart")
+);
+
+console.log(
+  "RETAIL TOTAL ELEMENT:",
+  document.getElementById("retailTotal")
+);
 
     
 
