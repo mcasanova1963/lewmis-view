@@ -715,25 +715,84 @@ if (btnClearCart) {
 // RETAIL INTERACTIVO
 // Simulación de pago con TDC.
 // =========================
+// =========================
+// RETAIL INTERACTIVO
+// Simulación visual de pago TDC.
+// =========================
 if (btnPayNow) {
 
   btnPayNow.addEventListener("click", () => {
 
+    const checkoutMsg =
+      document.getElementById(
+        "retailCheckoutMessage"
+      );
+
     if (retailCart.length === 0) {
-      alert("No hay productos para pagar.");
+
+      if (checkoutMsg) {
+
+        checkoutMsg.style.display =
+          "block";
+
+        checkoutMsg.style.background =
+          "#5c1f1f";
+
+        checkoutMsg.style.color =
+          "#ff8a80";
+
+        checkoutMsg.innerText =
+          "No hay productos para pagar.";
+
+      }
+
       return;
     }
 
-    alert("Pagando vía TDC...");
+    // =========================
+    // PROCESANDO PAGO
+    // =========================
+    if (checkoutMsg) {
 
+      checkoutMsg.style.display =
+        "block";
+
+      checkoutMsg.style.background =
+        "#1b2733";
+
+      checkoutMsg.style.color =
+        "#4fc3f7";
+
+      checkoutMsg.innerText =
+        "Pagando vía TDC...";
+
+    }
+
+    // =========================
+    // PAGO APROBADO
+    // =========================
     setTimeout(() => {
-      alert("Pago aprobado.");
+
+      if (checkoutMsg) {
+
+        checkoutMsg.style.background =
+          "#1b4332";
+
+        checkoutMsg.style.color =
+          "#95d5b2";
+
+        checkoutMsg.innerText =
+          "Pago aprobado.";
+
+      }
 
       retailCart = [];
+
       processedRetailEvents.clear();
+
       renderRetailCart();
 
-    }, 1200);
+    }, 1500);
 
   });
 
