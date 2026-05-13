@@ -602,6 +602,42 @@ btn.innerText = "Seguir comprando";
 }
 
 });
+
+  // =========================
+  // RETAIL INTERACTIVO
+  // Agrega una compra al carrito.
+  //
+  // Solo guarda:
+  // - caja
+  // - producto
+  // - peso tomado
+  // - valor a pagar
+  // - momento del evento
+  //
+  // eventKey evita duplicados.
+  // =========================
+  function addRetailCartItem(box) {
+
+  const eventKey =
+    (box.box_id || "-") + "|" +
+    (box.updated_at || "-") + "|" +
+    (box.amount_to_pay || 0);
+
+  if (processedRetailEvents.has(eventKey)) {
+    return;
+  }
+
+  processedRetailEvents.add(eventKey);
+
+  retailCart.push({
+    box_id: box.box_id || "-",
+    product: box.product || "-",
+    weight_kg: Number(box.weight_kg || 0),
+    amount_to_pay: Number(box.amount_to_pay || 0),
+    unit: (box.unit || "kg").toLowerCase(),
+    updated_at: box.updated_at || Date.now()
+  });
+}
     // =========================
     // RENDER DASHBOARD
     // Llena la tabla multi-caja
