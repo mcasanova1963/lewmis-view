@@ -667,10 +667,12 @@ btn.innerText = "Seguir comprando";
     (box.box_id || "-") + "|" +
     (box.updated_at || "-") + "|" +
     (box.amount_to_pay || 0);
+    console.log("EVENT KEY:", eventKey);
 
   if (processedRetailEvents.has(eventKey)) {
-    return;
-  }
+  console.log("EVENTO YA EXISTE, NO AGREGO:", eventKey);
+  return;
+}
 
   processedRetailEvents.add(eventKey);
 
