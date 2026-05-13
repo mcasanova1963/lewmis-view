@@ -224,13 +224,18 @@ function setText(id, text) {
     // solo del texto del estado.
     // =========================
    if (
-   Number(box.mode) === 4 &&
-   Number(box.amount_to_pay || 0) > 0
-   ) {
-   addRetailCartItem(box);
-   renderRetailCart();
-   console.log("RETAIL CART:", retailCart);
-   }
+  Number(box.mode) === 4 &&
+  Number(box.amount_to_pay || 0) > 0 &&
+  (
+    retailState === "A PAGAR" ||
+    retailState === "TO PAY" ||
+    retailState === "PAGAR AHORA"
+  )
+) {
+  addRetailCartItem(box);
+  renderRetailCart();
+  console.log("RETAIL CART:", retailCart);
+}
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
     
