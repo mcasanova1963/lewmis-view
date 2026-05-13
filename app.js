@@ -38,6 +38,13 @@ let processedRetailEvents = new Set();
 // =========================
 let retailBoxCooldown = {};
 // =========================
+// RETAIL INTERACTIVO
+// Candidatos pendientes por caja.
+// Evita agregar picos transitorios
+// antes de que el peso final se estabilice.
+// =========================
+let retailPendingByBox = {};
+// =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
 // por unidad de producto.
@@ -289,10 +296,40 @@ function setText(id, text) {
 // Esto evita múltiples compras
 // falsas mientras el peso fluctúa, pusimos 30g como limite
 // =========================
+// =========================
+// RETAIL - FILTRO DINAMICO
+// Calcula peso mínimo válido
+// según el producto.
+// =========================
+const productKey =
+  (box.product || "")
+    .toString()
+    .trim()
+    .toLowerCase();
+
+const productRef =
+  productWeightReference[productKey];
+
+// valor por defecto:
+// 30 gramos
+let minRetailKg = 0.03;
+
+// si existe referencia,
+// usamos cálculo dinámico
+if (productRef) {
+
+  minRetailKg =
+    (
+      productRef.avg_g *
+      productRef.min_factor
+    ) / 1000;
+
+}
+    
 if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
-  Number(box.weight_kg || 0) >= 0.03 &&
+  Number(box.weight_kg || 0) >= minRetailKg &&
   (
     retailState === "A PAGAR" ||
     retailState === "TO PAY" ||
