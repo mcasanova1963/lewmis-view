@@ -604,6 +604,12 @@ if (sensorEl) {
   // =========================
   const btnClearCart =
   document.getElementById("btnClearCart");
+  // =========================
+  // BOTON PAGAR AHORA
+  // Simula pago demo por TDC.
+  // =========================
+  const btnPayNow =
+  document.getElementById("btnPayNow");
 
   if (!btn) return;
 
@@ -695,24 +701,44 @@ btn.innerText = "Seguir comprando";
 // Limpia toda la compra demo.
 // =========================
 if (btnClearCart) {
-
   btnClearCart.addEventListener("click", () => {
-
     retailCart = [];
-
     processedRetailEvents.clear();
-
     renderRetailCart();
-
     console.log(
       "CARRITO LIMPIADO"
     );
+  });
+}
+
+// =========================
+// RETAIL INTERACTIVO
+// Simulación de pago con TDC.
+// =========================
+if (btnPayNow) {
+
+  btnPayNow.addEventListener("click", () => {
+
+    if (retailCart.length === 0) {
+      alert("No hay productos para pagar.");
+      return;
+    }
+
+    alert("Pagando vía TDC...");
+
+    setTimeout(() => {
+      alert("Pago aprobado.");
+
+      retailCart = [];
+      processedRetailEvents.clear();
+      renderRetailCart();
+
+    }, 1200);
 
   });
 
 }
     
-
 });
 
   // =========================
