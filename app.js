@@ -553,7 +553,7 @@ if (stateEl) {
       stateVisual === "TO PAY"
     )
   ) {
-    stateEl.innerText = tr("PAGAR_AHORA");
+    stateEl.innerText = tr("AGREGADO_COMPRA");
     stateEl.classList.add("pay-alert");
   } else {
     stateEl.innerText = tr(stateVisual);
