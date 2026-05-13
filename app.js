@@ -500,9 +500,31 @@ if (sensorEl) {
 
   if (!btn) return;
 
-  btn.addEventListener("click", () => {
+ btn.addEventListener("click", () => {
 
-    dashboardMode = !dashboardMode;
+  // =========================
+  // SI ESTAMOS EN RETAIL VIEW
+  // volvemos a la compra normal.
+  // =========================
+  const retailView =
+    document.getElementById("retailView");
+
+  if (retailView.style.display === "block") {
+
+    retailView.style.display = "none";
+
+    document.getElementById("singleView").style.display =
+      "block";
+
+    document.getElementById("title").innerText =
+      "LEWMIS - Retail";
+
+    btn.innerText = "Dashboard";
+
+    return;
+  }
+
+  dashboardMode = !dashboardMode;
 
     // =========================
     // MOSTRAR / OCULTAR VISTAS
@@ -516,10 +538,14 @@ if (sensorEl) {
     // =========================
     // CAMBIAR TEXTO BOTON
     // =========================
-    btn.innerText =
-      dashboardMode
-        ? "Vista individual"
-        : "Dashboard";
+    // =========================
+    // TEXTO BOTON PRINCIPAL
+    // =========================
+    if (dashboardMode) {
+    btn.innerText = "Vista individual";
+    } else {
+    btn.innerText = "Dashboard";
+    }
     // =========================
     // TITULO SEGUN VISTA
     // En dashboard no mostramos modo,
@@ -550,31 +576,37 @@ if (btnRetailView) {
 
     document.getElementById("title").innerText =
       "Retail interactivo";
+    // =========================
+    // UX RETAIL
+    // El botón principal ahora
+    // permite volver a la compra.
+    // =========================
+btn.innerText = "Seguir comprando";
   });
 
 }
 
 });
-// =========================
-// RENDER DASHBOARD
-// Llena la tabla multi-caja
-// usando todas las filas recibidas
-// desde Supabase.
-// =========================
-function renderDashboard(rows) {
+    // =========================
+    // RENDER DASHBOARD
+    // Llena la tabla multi-caja
+    // usando todas las filas recibidas
+    // desde Supabase.
+    // =========================
+    function renderDashboard(rows) {
 
   const tbody = document.getElementById("dashboardRows");
 
   if (!tbody) return;
 
-  // =========================
-  // LIMPIAR TABLA
-  // =========================
+    // =========================
+    // LIMPIAR TABLA
+    // =========================
   tbody.innerHTML = "";
 
-  // =========================
-  // SIN DATOS
-  // =========================
+    // =========================
+    // SIN DATOS
+    // =========================
   if (!rows || rows.length === 0) {
 
     tbody.innerHTML = `
