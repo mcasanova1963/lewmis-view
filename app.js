@@ -791,6 +791,13 @@ if (btnPayNow) {
         checkoutMsg.innerText =
           "Pago aprobado.";
 
+        setTimeout(() => {
+
+        checkoutMsg.style.display =
+    "none";
+
+}, 2500);
+
       }
 
       retailCart = [];
