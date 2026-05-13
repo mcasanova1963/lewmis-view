@@ -627,6 +627,8 @@ if (btnRetailView) {
     document.getElementById("retailView").style.display =
       "block";
 
+    
+
     document.getElementById("title").innerText =
       "Retail interactivo";
     // =========================
