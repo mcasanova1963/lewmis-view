@@ -677,6 +677,7 @@ btn.innerText = "Seguir comprando";
     unit: (box.unit || "kg").toLowerCase(),
     updated_at: box.updated_at || Date.now()
   });
+    console.log("CARRITO ACTUAL:", retailCart);
 }
 
 // =========================
