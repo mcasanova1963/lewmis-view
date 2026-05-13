@@ -194,9 +194,37 @@ function setText(id, text) {
     // =========================
     const btnRetailView = document.getElementById("btnRetailView");
 
-if (btnRetailView) {
-  btnRetailView.style.display =
+    if (btnRetailView) {
+    btnRetailView.style.display =
     Number(box.mode) === 4 ? "block" : "none";
+    }
+
+    // =========================
+    // RETAIL INTERACTIVO
+    // Detecta eventos de compra.
+    //
+    // Cuando una caja Retail entra en:
+    // PAGAR AHORA / A PAGAR / TO PAY
+    //
+    // se agrega automáticamente
+    // al carrito multi-caja.
+    // =========================
+    const retailState =
+  (box.state || "")
+    .toString()
+    .trim()
+    .toUpperCase();
+
+    if (
+  Number(box.mode) === 4 &&
+  (
+    retailState === "PAGAR AHORA" ||
+    retailState === "A PAGAR" ||
+    retailState === "TO PAY"
+  )
+) {
+
+  addRetailCartItem(box);
 }
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
