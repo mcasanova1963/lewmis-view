@@ -657,7 +657,7 @@ btn.innerText = "Seguir comprando";
   // eventKey evita duplicados.
   // =========================
   function addRetailCartItem(box) {
-
+  console.log("INTENTO AGREGAR AL CARRITO:", box);
   const eventKey =
     (box.box_id || "-") + "|" +
     (box.updated_at || "-") + "|" +
