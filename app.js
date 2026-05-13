@@ -490,6 +490,13 @@ if (sensorEl) {
   document.addEventListener("DOMContentLoaded", () => {
 
   const btn = document.getElementById("btnDashboard");
+  // =========================
+  // BOTON RETAIL VIEW
+  // Abre la pantalla de compra
+  // interactiva multi-caja.
+  // =========================
+  const btnRetailView =
+  document.getElementById("btnRetailView");
 
   if (!btn) return;
 
@@ -523,6 +530,29 @@ if (sensorEl) {
     ? "LEWMIS Dashboard"
     : "LEWMIS";
   });
+    // =========================
+   // RETAIL INTERACTIVO
+   // Cambia desde vista individual
+   // hacia el carrito multi-caja.
+   // =========================
+if (btnRetailView) {
+
+  btnRetailView.addEventListener("click", () => {
+
+    document.getElementById("singleView").style.display =
+      "none";
+
+    document.getElementById("dashboardView").style.display =
+      "none";
+
+    document.getElementById("retailView").style.display =
+      "block";
+
+    document.getElementById("title").innerText =
+      "Retail interactivo";
+  });
+
+}
 
 });
 // =========================
