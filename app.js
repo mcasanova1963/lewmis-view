@@ -680,16 +680,18 @@ btn.innerText = "Seguir comprando";
   // =========================
   function addRetailCartItem(box) {
   console.log("INTENTO AGREGAR AL CARRITO:", box);
-  const eventKey =
-    (box.box_id || "-") + "|" +
-    (box.updated_at || "-") + "|" +
-    (box.amount_to_pay || 0);
-    console.log("EVENT KEY:", eventKey);
+    
+ const eventKey =
+  `${box.box_id || "-"}|${box.updated_at || "-"}|${box.amount_to_pay || 0}`;
 
-  if (processedRetailEvents.has(eventKey)) {
+console.log("EVENT KEY:", eventKey);
+
+if (processedRetailEvents.has(eventKey)) {
   console.log("EVENTO YA EXISTE, NO AGREGO:", eventKey);
   return;
 }
+
+  
 
   processedRetailEvents.add(eventKey);
 
