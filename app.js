@@ -748,6 +748,8 @@ function renderRetailCart() {
   // LIMPIAR CONTENIDO
   // =========================
   cart.innerHTML = "";
+  console.log("RENDER RETAIL CART LENGTH:", retailCart.length);
+  console.log("RENDER RETAIL CART DATA:", retailCart);
 
   let total = 0;
 
