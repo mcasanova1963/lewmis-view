@@ -37,6 +37,52 @@ let processedRetailEvents = new Set();
 // sigue reportando cambios pequeños.
 // =========================
 let retailBoxCooldown = {};
+// =========================
+// RETAIL - PESO REFERENCIAL
+// Tabla local de pesos promedio
+// por unidad de producto.
+// Sirve para filtrar compras falsas
+// causadas por ruido o micro-saltos.
+//
+// avg_g = peso promedio por unidad en gramos
+// min_factor = fracción mínima aceptable
+// =========================
+const productWeightReference = {
+  "tomate":  { avg_g: 120, min_factor: 0.30 },
+  "tomates": { avg_g: 120, min_factor: 0.30 },
+
+  "papa":  { avg_g: 180, min_factor: 0.30 },
+  "papas": { avg_g: 180, min_factor: 0.30 },
+
+  "pera":  { avg_g: 170, min_factor: 0.30 },
+  "peras": { avg_g: 170, min_factor: 0.30 },
+
+  "banano":  { avg_g: 120, min_factor: 0.30 },
+  "bananos": { avg_g: 120, min_factor: 0.30 },
+
+  "yuca": { avg_g: 500, min_factor: 0.25 },
+
+  "cebolla":  { avg_g: 150, min_factor: 0.30 },
+  "cebollas": { avg_g: 150, min_factor: 0.30 },
+
+  "zanahoria":  { avg_g: 90, min_factor: 0.30 },
+  "zanahorias": { avg_g: 90, min_factor: 0.30 },
+
+  "manzana":  { avg_g: 180, min_factor: 0.30 },
+  "manzanas": { avg_g: 180, min_factor: 0.30 },
+
+  "naranja":  { avg_g: 220, min_factor: 0.30 },
+  "naranjas": { avg_g: 220, min_factor: 0.30 },
+
+  "limon":  { avg_g: 80, min_factor: 0.30 },
+  "limones": { avg_g: 80, min_factor: 0.30 },
+
+  "fresa":  { avg_g: 20, min_factor: 0.50 },
+  "fresas": { avg_g: 20, min_factor: 0.50 },
+
+  "uva":  { avg_g: 5, min_factor: 1.00 },
+  "uvas": { avg_g: 5, min_factor: 1.00 }
+};
 
 let retailPayHoldUntil = 0;
 let retailLastPayState = false;
