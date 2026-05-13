@@ -399,11 +399,6 @@ if (
 
 }
 
-
-
-  }
-
-}
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
     
