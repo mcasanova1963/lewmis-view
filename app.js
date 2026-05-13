@@ -620,6 +620,13 @@ if (btnRetailView) {
     document.getElementById("title").innerText =
       "Retail interactivo";
     // =========================
+    // RETAIL INTERACTIVO
+    // Al entrar a la vista de compra,
+    // actualizamos el carrito en pantalla.
+    // =========================
+    renderRetailCart();
+    
+    // =========================
     // UX RETAIL
     // El botón principal ahora
     // permite volver a la compra.
