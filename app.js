@@ -399,17 +399,7 @@ if (
 
 }
 
-    console.log(
-      "RETAIL CART:",
-      retailCart
-    );
 
-    // =========================
-    // BLOQUEAR ESTA CAJA
-    // DURANTE 4 SEGUNDOS
-    // =========================
-    retailBoxCooldown[boxKey] =
-      now + 4000;
 
   }
 
