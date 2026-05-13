@@ -215,17 +215,22 @@ function setText(id, text) {
     .trim()
     .toUpperCase();
 
-    if (
-  Number(box.mode) === 4 &&
-  (
-    retailState === "PAGAR AHORA" ||
-    retailState === "A PAGAR" ||
-    retailState === "TO PAY"
-  )
-) {
-
-  addRetailCartItem(box);
-}
+    // =========================
+    // RETAIL INTERACTIVO
+    // Captura compra si:
+    // - estamos en modo Retail
+    // - hay monto a pagar mayor que cero
+    // Esto es más confiable que depender
+    // solo del texto del estado.
+    // =========================
+   if (
+   Number(box.mode) === 4 &&
+   Number(box.amount_to_pay || 0) > 0
+   ) {
+   addRetailCartItem(box);
+   renderRetailCart();
+   console.log("RETAIL CART:", retailCart);
+   }
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
     
