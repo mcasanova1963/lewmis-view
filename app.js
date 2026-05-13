@@ -72,6 +72,7 @@ function tr(key) {
     "A pagar": en ? "To pay" : "A pagar",
     "A PAGAR": en ? "TO PAY" : "A PAGAR",
     "PAGAR_AHORA": en ? "PAY NOW" : "PAGAR AHORA",
+    "AGREGADO_COMPRA": en ? "ADDED TO CART" : "AGREGADO A COMPRA",
     "PESANDO": en ? "WEIGHING" : "PESANDO",
     "LISTO": en ? "READY" : "LISTO",
 
