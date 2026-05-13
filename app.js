@@ -666,6 +666,119 @@ btn.innerText = "Seguir comprando";
     updated_at: box.updated_at || Date.now()
   });
 }
+
+// =========================
+// RETAIL INTERACTIVO
+// Renderiza el carrito visual.
+// =========================
+function renderRetailCart() {
+
+  const cart =
+    document.getElementById("retailCart");
+
+  const totalEl =
+    document.getElementById("retailTotal");
+
+  if (!cart || !totalEl) return;
+
+  // =========================
+  // CARRITO VACIO
+  // =========================
+  if (retailCart.length === 0) {
+
+    cart.innerHTML = `
+      <div class="small">
+        No hay productos agregados
+      </div>
+    `;
+
+    totalEl.innerText = "$ 0,00";
+
+    return;
+  }
+
+  // =========================
+  // LIMPIAR CONTENIDO
+  // =========================
+  cart.innerHTML = "";
+
+  let total = 0;
+
+  // =========================
+  // UNA FILA POR PRODUCTO
+  // =========================
+  retailCart.forEach(item => {
+
+    total += Number(item.amount_to_pay || 0);
+
+    const row =
+      document.createElement("div");
+
+    row.style.borderTop =
+      "1px solid #263238";
+
+    row.style.padding =
+      "12px 0";
+
+    row.innerHTML = `
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+      ">
+
+        <div>
+
+          <div style="
+            font-weight:bold;
+            font-size:18px;
+          ">
+            ${item.product}
+          </div>
+
+          <div style="
+            color:#90a4ae;
+            font-size:13px;
+            margin-top:4px;
+          ">
+            ${item.box_id}
+          </div>
+
+        </div>
+
+        <div style="text-align:right;">
+
+          <div style="
+            font-weight:bold;
+          ">
+            ${formatWeight(
+              item.weight_kg,
+              item.unit
+            )}
+          </div>
+
+          <div style="
+            color:#ffd54f;
+            margin-top:4px;
+          ">
+            ${formatMoney(
+              item.amount_to_pay
+            )}
+          </div>
+
+        </div>
+
+      </div>
+    `;
+
+    cart.appendChild(row);
+
+  });
+
+  totalEl.innerText =
+    formatMoney(total);
+}
     // =========================
     // RENDER DASHBOARD
     // Llena la tabla multi-caja
@@ -674,14 +787,14 @@ btn.innerText = "Seguir comprando";
     // =========================
     function renderDashboard(rows) {
 
-  const tbody = document.getElementById("dashboardRows");
+    const tbody = document.getElementById("dashboardRows");
 
-  if (!tbody) return;
+    if (!tbody) return;
 
     // =========================
     // LIMPIAR TABLA
     // =========================
-  tbody.innerHTML = "";
+    tbody.innerHTML = "";
 
     // =========================
     // SIN DATOS
