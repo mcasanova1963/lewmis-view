@@ -15,6 +15,21 @@ let currentLang = "EN";
 // true  = dashboard multi-caja
 // =========================
 let dashboardMode = false;
+// =========================
+// RETAIL INTERACTIVO
+// Carrito temporal multi-caja.
+//
+// retailCart:
+// lista de productos agregados.
+//
+// processedRetailEvents:
+// evita agregar el mismo evento
+// varias veces.
+// =========================
+let retailCart = [];
+
+let processedRetailEvents = new Set();
+
 let retailPayHoldUntil = 0;
 let retailLastPayState = false;
 
