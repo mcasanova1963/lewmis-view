@@ -599,6 +599,11 @@ if (sensorEl) {
   // =========================
   const btnRetailView =
   document.getElementById("btnRetailView");
+  // =========================
+  // BOTON LIMPIAR CARRITO
+  // =========================
+  const btnClearCart =
+  document.getElementById("btnClearCart");
 
   if (!btn) return;
 
@@ -664,35 +669,13 @@ if (sensorEl) {
    // hacia el carrito multi-caja.
    // =========================
 if (btnRetailView) {
-
   btnRetailView.addEventListener("click", () => {
-
     document.getElementById("singleView").style.display =
       "none";
-
     document.getElementById("dashboardView").style.display =
       "none";
-
     document.getElementById("retailView").style.display =
   "block";
-
-console.log(
-  "RETAIL VIEW ELEMENT:",
-  document.getElementById("retailView")
-);
-
-console.log(
-  "RETAIL CART ELEMENT:",
-  document.getElementById("retailCart")
-);
-
-console.log(
-  "RETAIL TOTAL ELEMENT:",
-  document.getElementById("retailTotal")
-);
-
-    
-
     document.getElementById("title").innerText =
       "Retail interactivo";
     // =========================
@@ -701,16 +684,34 @@ console.log(
     // actualizamos el carrito en pantalla.
     // =========================
     renderRetailCart();
-    
-    // =========================
     // UX RETAIL
     // El botón principal ahora
     // permite volver a la compra.
-    // =========================
 btn.innerText = "Seguir comprando";
+  });
+}
+// =========================
+// RETAIL INTERACTIVO
+// Limpia toda la compra demo.
+// =========================
+if (btnClearCart) {
+
+  btnClearCart.addEventListener("click", () => {
+
+    retailCart = [];
+
+    processedRetailEvents.clear();
+
+    renderRetailCart();
+
+    console.log(
+      "CARRITO LIMPIADO"
+    );
+
   });
 
 }
+    
 
 });
 
