@@ -744,6 +744,13 @@ if (btnPayNow) {
         checkoutMsg.innerText =
           "No hay productos para pagar.";
 
+        setTimeout(() => {
+
+  checkoutMsg.style.display =
+    "none";
+
+}, 2500);
+
       }
 
       return;
