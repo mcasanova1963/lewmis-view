@@ -30,6 +30,14 @@ let retailCart = [];
 
 let processedRetailEvents = new Set();
 
+// =========================
+// RETAIL INTERACTIVO
+// Evita capturar muchas veces
+// la misma compra mientras la caja
+// sigue reportando cambios pequeños.
+// =========================
+let retailBoxCooldown = {};
+
 let retailPayHoldUntil = 0;
 let retailLastPayState = false;
 
