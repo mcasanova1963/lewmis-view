@@ -241,11 +241,12 @@ function setText(id, text) {
 // - no estamos en cooldown
 //
 // Esto evita múltiples compras
-// falsas mientras el peso fluctúa.
+// falsas mientras el peso fluctúa, pusimos 30g como limite
 // =========================
 if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
+  Number(box.weight_kg || 0) >= 0.03 &&
   (
     retailState === "A PAGAR" ||
     retailState === "TO PAY" ||
