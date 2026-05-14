@@ -328,25 +328,7 @@ function finalizeRetailSession(boxKey) {
     .trim()
     .toUpperCase();
 
-    // =========================
-    // RETAIL INTERACTIVO
-    // Captura compra si:
-    // - estamos en modo Retail
-    // - hay monto a pagar mayor que cero
-    // Esto es más confiable que depender
-    // solo del texto del estado.
-    // =========================
-   // =========================
-// RETAIL INTERACTIVO
-// Captura SOLO cuando:
-//
-// - estamos en Retail
-// - estado final de pago
-// - no estamos en cooldown
-//
-// Esto evita múltiples compras
-// falsas mientras el peso fluctúa, pusimos 30g como limite
-// =========================
+
 // =========================
 // RETAIL - FILTRO DINAMICO
 // Calcula peso mínimo válido
@@ -376,61 +358,7 @@ if (productRef) {
     ) / 1000;
 
 }
-// =========================
-// RETAIL INTERACTIVO
-// Captura compra Retail con espera
-// de estabilización.
-//
-// La lógica:
-// 1. Si hay compra posible, guarda candidato.
-// 2. Espera 1.2 s.
-// 3. Usa el último valor visto.
-// 4. Agrega al carrito.
-// 5. Activa cooldown.
-// =========================
-   // =========================
-// RETAIL INTERACTIVO
-// Captura por ventana.
-//
-// Problema real:
-// al retirar producto pueden aparecer
-// picos transitorios altos.
-//
-// Solución demo:
-// durante una ventana corta guardamos
-// el MENOR peso válido observado.
-// =========================
-// =========================
-// RETAIL INTERACTIVO
-// SESION AUTOMATICA DE RETIRO
-//
-// En vez de agregar cada lectura,
-// agrupamos lecturas de una misma
-// retirada durante una ventana corta.
-//
-// Se guarda el MENOR peso válido
-// observado para evitar picos altos.
-// =========================
-// =========================
-// RETAIL INTERACTIVO
-// SESION AUTOMATICA DE RETIRO
-// CON BLOQUEO POR CICLO
-// =========================
-// =========================
-// RETAIL INTERACTIVO
-// CAPTURA AUTOMATICA POR SESION
-//
-// Regla:
-// 1. La caja debe haber estado lista.
-// 2. Cuando aparece monto/peso válido,
-//    se abre una sesión.
-// 3. Mientras llegan lecturas,
-//    se guarda el menor peso válido.
-// 4. Si la señal cae a cero/reset,
-//    se finaliza la sesión.
-// 5. Si la señal se queda estable,
-//    se finaliza por timer.
-// =========================
+
 // =========================
 // RETAIL INTERACTIVO
 // CAPTURA AUTOMATICA LIMPIA
