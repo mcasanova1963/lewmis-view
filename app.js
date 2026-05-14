@@ -65,6 +65,15 @@ let retailPendingTimers = {};
 // =========================
 let retailActiveSessions = {};
 // =========================
+// RETAIL INTERACTIVO
+// Evita reabrir compras viejas.
+// Una caja solo puede generar
+// una compra por ciclo:
+// amount_to_pay > 0 → compra
+// amount_to_pay = 0 → se libera
+// =========================
+let retailBoxPurchaseOpen = {};
+// =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
 // por unidad de producto.
@@ -380,28 +389,55 @@ if (productRef) {
 // Se guarda el MENOR peso válido
 // observado para evitar picos altos.
 // =========================
-if (
-  Number(box.mode) === 4 &&
-  Number(box.amount_to_pay || 0) > 0 &&
-  Number(box.weight_kg || 0) >= minRetailKg
-) {
+// =========================
+// RETAIL INTERACTIVO
+// SESION AUTOMATICA DE RETIRO
+// CON BLOQUEO POR CICLO
+// =========================
+const boxKey =
+  box.box_id || "UNKNOWN_BOX";
 
-  const boxKey =
-    box.box_id || "UNKNOWN_BOX";
+const currentWeight =
+  Number(box.weight_kg || 0);
+
+const currentAmount =
+  Number(box.amount_to_pay || 0);
+
+const isRetailPurchaseSignal =
+  Number(box.mode) === 4 &&
+  currentAmount > 0 &&
+  currentWeight >= minRetailKg;
+
+// =========================
+// SI LA COMPRA YA VOLVIO A CERO,
+// liberamos la caja para una futura compra.
+// =========================
+if (!isRetailPurchaseSignal) {
+
+  retailBoxPurchaseOpen[boxKey] =
+    false;
+
+  if (retailPendingTimers[boxKey]) {
+    clearTimeout(retailPendingTimers[boxKey]);
+  }
+
+  delete retailActiveSessions[boxKey];
+  delete retailPendingTimers[boxKey];
+}
+
+// =========================
+// SOLO INICIAR SI:
+// - hay señal de compra
+// - la caja NO tiene una compra abierta
+// =========================
+if (
+  isRetailPurchaseSignal &&
+  !retailBoxPurchaseOpen[boxKey]
+) {
 
   const now =
     Date.now();
 
-  const currentWeight =
-    Number(box.weight_kg || 0);
-
-  const currentAmount =
-    Number(box.amount_to_pay || 0);
-
-  // =========================
-  // SI NO HAY SESION,
-  // CREAR UNA NUEVA
-  // =========================
   if (!retailActiveSessions[boxKey]) {
 
     retailActiveSessions[boxKey] = {
@@ -414,10 +450,6 @@ if (
 
   } else {
 
-    // =========================
-    // SI YA HAY SESION,
-    // conservar menor peso válido
-    // =========================
     const session =
       retailActiveSessions[boxKey];
 
@@ -437,11 +469,6 @@ if (
       now;
   }
 
-  // =========================
-  // REINICIAR TIMER DE CIERRE
-  // Cada nueva lectura válida extiende
-  // la sesión un poco más.
-  // =========================
   if (retailPendingTimers[boxKey]) {
     clearTimeout(retailPendingTimers[boxKey]);
   }
@@ -457,10 +484,6 @@ if (
       const finalBox =
         { ...session.box };
 
-      // =========================
-      // Asegurar que el carrito use
-      // el menor peso y monto asociado.
-      // =========================
       finalBox.weight_kg =
         session.minWeightKg;
 
@@ -469,14 +492,19 @@ if (
 
       addRetailCartItem(finalBox);
 
-      retailBoxCooldown[boxKey] =
-        Date.now() + 2000;
+      // =========================
+      // BLOQUEAR ESTA CAJA
+      // hasta que amount_to_pay
+      // vuelva a cero.
+      // =========================
+      retailBoxPurchaseOpen[boxKey] =
+        true;
 
       delete retailActiveSessions[boxKey];
       delete retailPendingTimers[boxKey];
 
       console.log(
-        "RETAIL SESION AGREGADA:",
+        "RETAIL COMPRA UNICA AGREGADA:",
         finalBox
       );
 
