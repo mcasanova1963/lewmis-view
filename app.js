@@ -64,8 +64,8 @@ const productWeightReference = {
   "tomate":  { avg_g: 120, min_factor: 0.30 },
   "tomates": { avg_g: 120, min_factor: 0.30 },
 
-  "papa":  { avg_g: 180, min_factor: 0.30 },
-  "papas": { avg_g: 180, min_factor: 0.30 },
+  "papa":  { avg_g: 180, min_factor: 0.15 },
+  "papas": { avg_g: 180, min_factor: 0.15 },
 
   "pera":  { avg_g: 170, min_factor: 0.30 },
   "peras": { avg_g: 170, min_factor: 0.30 },
