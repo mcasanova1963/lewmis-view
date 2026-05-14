@@ -36,11 +36,8 @@ let dashboardMode = false;
 // LISTO/IDLE/EMPTY -> armada
 // A PAGAR          -> agrega una vez
 // =========================
-let retailBoxCycle = {};
 let retailCart = [];
-
 let processedRetailEvents = new Set();
-
 // =========================
 // RETAIL INTERACTIVO
 // Control de ciclo por caja.
@@ -49,8 +46,6 @@ let processedRetailEvents = new Set();
 // la misma compra.
 // =========================
 let retailBoxCycle = {};
-// =========================
-let retailResetSince = {};
 // =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
@@ -205,51 +200,7 @@ function setText(id, text) {
       default: return "-";
     }
   }
-// =========================
-// RETAIL INTERACTIVO
-// Cierra una sesión de compra
-// y agrega UNA sola línea al carrito.
-//
-// Usa el menor peso válido observado
-// durante la sesión.
-// =========================
-function finalizeRetailSession(boxKey) {
 
-  const session =
-    retailActiveSessions[boxKey];
-
-  if (!session) return;
-
-  const finalBox =
-    { ...session.box };
-
-  finalBox.weight_kg =
-    session.minWeightKg;
-
-  finalBox.amount_to_pay =
-    session.minAmount;
-
-  addRetailCartItem(finalBox);
-
-  retailBoxPurchaseOpen[boxKey] =
-    true;
-
-  retailBoxReady[boxKey] =
-    false;
-
-  delete retailActiveSessions[boxKey];
-
-  if (retailPendingTimers[boxKey]) {
-    clearTimeout(retailPendingTimers[boxKey]);
-  }
-
-  delete retailPendingTimers[boxKey];
-
-  console.log(
-    "RETAIL SESION FINALIZADA:",
-    finalBox
-  );
-}
   async function loadBoxStatus() {
    // =========================
    // DASHBOARD MULTI-CAJA
