@@ -493,8 +493,25 @@ setText("thBattery", tr("Batería"));
     box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
 
     const formattedWeight = formatWeight(box.weight_kg, unit);
-    console.log("FORMATTED WEIGHT:", formattedWeight);
-    document.getElementById("weight").innerText = formattedWeight;
+
+console.log("FORMATTED WEIGHT:", formattedWeight);
+
+// =========================
+// RETAIL
+// No mostrar peso vivo mientras
+// la caja está pesando o con ruido.
+// Solo mostrarlo cuando está en
+// estado final A PAGAR.
+// =========================
+if (
+  Number(box.mode) === 4 &&
+  rawRetailState !== "A PAGAR" &&
+  rawRetailState !== "TO PAY"
+) {
+  document.getElementById("weight").innerText = "-";
+} else {
+  document.getElementById("weight").innerText = formattedWeight;
+}
 
     // =========================
     // ETIQUETA PRINCIPAL DE PESO
