@@ -337,98 +337,32 @@ if (productRef) {
 // 4. Agrega al carrito.
 // 5. Activa cooldown.
 // =========================
-if (
+   if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
   Number(box.weight_kg || 0) >= minRetailKg &&
   (
     retailState === "A PAGAR" ||
     retailState === "TO PAY" ||
-    retailState === "PAGAR AHORA" ||
-    retailState === "PESANDO"
+    retailState === "PAGAR AHORA"
   )
 ) {
-
   const boxKey =
     box.box_id || "UNKNOWN_BOX";
-
   const now =
     Date.now();
-
   const cooldownUntil =
     retailBoxCooldown[boxKey] || 0;
-
   if (now > cooldownUntil) {
-
-    const existingPending =
-      retailPendingByBox[boxKey];
-
-    // =========================
-    // Guardamos SIEMPRE el último
-    // valor visto como candidato.
-    // =========================
-    retailPendingByBox[boxKey] = {
-      box: { ...box },
-      capturedAt: now,
-      minRetailKg: minRetailKg,
-      timerStarted:
-        existingPending
-          ? existingPending.timerStarted
-          : false
-    };
-
-    // =========================
-    // Solo arrancamos UN timer
-    // por caja.
-    // =========================
-    if (!retailPendingByBox[boxKey].timerStarted) {
-
-      retailPendingByBox[boxKey].timerStarted = true;
-
-      setTimeout(() => {
-
-        const pending =
-          retailPendingByBox[boxKey];
-
-        if (!pending) return;
-
-        const finalWeight =
-          Number(pending.box.weight_kg || 0);
-
-        const finalAmount =
-          Number(pending.box.amount_to_pay || 0);
-
-        // =========================
-        // Validación final.
-        // Si al final cayó por debajo
-        // del mínimo, no agregamos.
-        // =========================
-        if (
-          finalWeight < pending.minRetailKg ||
-          finalAmount <= 0
-        ) {
-          delete retailPendingByBox[boxKey];
-          return;
-        }
-
-        addRetailCartItem(
-          pending.box
-        );
-
-        console.log(
-          "RETAIL ESTABLE:",
-          pending.box
-        );
-
-        retailBoxCooldown[boxKey] =
-          Date.now() + 4000;
-
-        delete retailPendingByBox[boxKey];
-
-      }, 1200);
-    }
+    addRetailCartItem(box);
+    retailBoxCooldown[boxKey] =
+      now + 4000;
+    console.log(
+      "RETAIL CART:",
+      retailCart
+    );
   }
-}    
+}
 
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
