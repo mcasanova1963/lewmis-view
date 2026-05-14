@@ -74,6 +74,15 @@ let retailActiveSessions = {};
 // =========================
 let retailBoxPurchaseOpen = {};
 // =========================
+// RETAIL INTERACTIVO
+// La caja solo puede capturar
+// una compra después de haber visto
+// primero amount_to_pay = 0.
+// Esto evita cargar compras viejas
+// que quedaron en Supabase.
+// =========================
+let retailBoxReady = {};
+// =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
 // por unidad de producto.
@@ -416,6 +425,8 @@ if (!isRetailPurchaseSignal) {
 
   retailBoxPurchaseOpen[boxKey] =
     false;
+   retailBoxReady[boxKey] =
+    true;
 
   if (retailPendingTimers[boxKey]) {
     clearTimeout(retailPendingTimers[boxKey]);
@@ -432,6 +443,7 @@ if (!isRetailPurchaseSignal) {
 // =========================
 if (
   isRetailPurchaseSignal &&
+  retailBoxReady[boxKey] === true &&
   !retailBoxPurchaseOpen[boxKey]
 ) {
 
@@ -499,6 +511,8 @@ if (
       // =========================
       retailBoxPurchaseOpen[boxKey] =
         true;
+      retailBoxReady[boxKey] =
+  false;
 
       delete retailActiveSessions[boxKey];
       delete retailPendingTimers[boxKey];
