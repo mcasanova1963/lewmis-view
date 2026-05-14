@@ -51,6 +51,20 @@ let retailPendingByBox = {};
 // =========================
 let retailPendingTimers = {};
 // =========================
+// RETAIL INTERACTIVO
+// Sesiones activas de retiro.
+//
+// Cada caja mantiene:
+//
+// - menor peso válido visto
+// - último momento actualizado
+// - timer de cierre
+//
+// Así evitamos capturar
+// picos transitorios.
+// =========================
+let retailActiveSessions = {};
+// =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
 // por unidad de producto.
