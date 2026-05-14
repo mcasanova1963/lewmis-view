@@ -45,6 +45,12 @@ let retailBoxCooldown = {};
 // =========================
 let retailPendingByBox = {};
 // =========================
+// RETAIL INTERACTIVO
+// Timers por caja para cerrar
+// una ventana de captura.
+// =========================
+let retailPendingTimers = {};
+// =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
 // por unidad de producto.
@@ -337,7 +343,19 @@ if (productRef) {
 // 4. Agrega al carrito.
 // 5. Activa cooldown.
 // =========================
-   if (
+   // =========================
+// RETAIL INTERACTIVO
+// Captura por ventana.
+//
+// Problema real:
+// al retirar producto pueden aparecer
+// picos transitorios altos.
+//
+// Solución demo:
+// durante una ventana corta guardamos
+// el MENOR peso válido observado.
+// =========================
+if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
   Number(box.weight_kg || 0) >= minRetailKg
@@ -354,15 +372,63 @@ if (productRef) {
 
   if (now > cooldownUntil) {
 
-    addRetailCartItem(box);
+    const currentWeight =
+      Number(box.weight_kg || 0);
 
-    retailBoxCooldown[boxKey] =
-      now + 4000;
+    const currentAmount =
+      Number(box.amount_to_pay || 0);
 
-    console.log(
-      "RETAIL CART:",
-      retailCart
-    );
+    const existing =
+      retailPendingByBox[boxKey];
+
+    // =========================
+    // Si no hay candidato,
+    // creamos uno.
+    // Si ya existe, conservamos
+    // el menor peso válido observado.
+    // =========================
+    if (
+      !existing ||
+      currentWeight < Number(existing.box.weight_kg || 0)
+    ) {
+      retailPendingByBox[boxKey] = {
+        box: { ...box },
+        updatedAt: now
+      };
+    }
+
+    // =========================
+    // Reiniciar timer de cierre
+    // de ventana para esta caja.
+    // =========================
+    if (retailPendingTimers[boxKey]) {
+      clearTimeout(retailPendingTimers[boxKey]);
+    }
+
+    retailPendingTimers[boxKey] =
+      setTimeout(() => {
+
+        const pending =
+          retailPendingByBox[boxKey];
+
+        if (!pending) return;
+
+        addRetailCartItem(
+          pending.box
+        );
+
+        retailBoxCooldown[boxKey] =
+          Date.now() + 4000;
+
+        delete retailPendingByBox[boxKey];
+        delete retailPendingTimers[boxKey];
+
+        console.log(
+          "RETAIL AGREGADO POR MENOR PESO:",
+          pending.box
+        );
+
+      }, 1800);
   }
 }
       const demoSensor = box.demo_sensor || "OFF";
