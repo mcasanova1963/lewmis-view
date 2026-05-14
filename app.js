@@ -340,30 +340,31 @@ if (productRef) {
    if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
-  Number(box.weight_kg || 0) >= minRetailKg &&
-  (
-    retailState === "A PAGAR" ||
-    retailState === "TO PAY" ||
-    retailState === "PAGAR AHORA"
-  )
+  Number(box.weight_kg || 0) >= minRetailKg
 ) {
+
   const boxKey =
     box.box_id || "UNKNOWN_BOX";
+
   const now =
     Date.now();
+
   const cooldownUntil =
     retailBoxCooldown[boxKey] || 0;
+
   if (now > cooldownUntil) {
+
     addRetailCartItem(box);
+
     retailBoxCooldown[boxKey] =
       now + 4000;
+
     console.log(
       "RETAIL CART:",
       retailCart
     );
   }
 }
-
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
     
