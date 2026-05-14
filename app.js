@@ -499,10 +499,26 @@ const isRetailReset =
 // =========================
 if (isRetailReset) {
 
+  // =========================
+  // Si había una sesión activa,
+  // primero cerramos la compra.
+  // IMPORTANTE:
+  // No dejamos la caja lista todavía,
+  // para evitar capturar un segundo pico
+  // viejo inmediatamente después.
+  // =========================
   if (retailActiveSessions[boxKey]) {
+
     finalizeRetailSession(boxKey);
+
+    return;
   }
 
+  // =========================
+  // Solo si NO había sesión activa,
+  // la caja queda lista para una
+  // futura compra real.
+  // =========================
   retailBoxPurchaseOpen[boxKey] =
     false;
 
