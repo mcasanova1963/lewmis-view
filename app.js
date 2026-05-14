@@ -238,7 +238,51 @@ function setText(id, text) {
       default: return "-";
     }
   }
+// =========================
+// RETAIL INTERACTIVO
+// Cierra una sesión de compra
+// y agrega UNA sola línea al carrito.
+//
+// Usa el menor peso válido observado
+// durante la sesión.
+// =========================
+function finalizeRetailSession(boxKey) {
 
+  const session =
+    retailActiveSessions[boxKey];
+
+  if (!session) return;
+
+  const finalBox =
+    { ...session.box };
+
+  finalBox.weight_kg =
+    session.minWeightKg;
+
+  finalBox.amount_to_pay =
+    session.minAmount;
+
+  addRetailCartItem(finalBox);
+
+  retailBoxPurchaseOpen[boxKey] =
+    true;
+
+  retailBoxReady[boxKey] =
+    false;
+
+  delete retailActiveSessions[boxKey];
+
+  if (retailPendingTimers[boxKey]) {
+    clearTimeout(retailPendingTimers[boxKey]);
+  }
+
+  delete retailPendingTimers[boxKey];
+
+  console.log(
+    "RETAIL SESION FINALIZADA:",
+    finalBox
+  );
+}
   async function loadBoxStatus() {
    // =========================
    // DASHBOARD MULTI-CAJA
@@ -403,6 +447,21 @@ if (productRef) {
 // SESION AUTOMATICA DE RETIRO
 // CON BLOQUEO POR CICLO
 // =========================
+// =========================
+// RETAIL INTERACTIVO
+// CAPTURA AUTOMATICA POR SESION
+//
+// Regla:
+// 1. La caja debe haber estado lista.
+// 2. Cuando aparece monto/peso válido,
+//    se abre una sesión.
+// 3. Mientras llegan lecturas,
+//    se guarda el menor peso válido.
+// 4. Si la señal cae a cero/reset,
+//    se finaliza la sesión.
+// 5. Si la señal se queda estable,
+//    se finaliza por timer.
+// =========================
 const boxKey =
   box.box_id || "UNKNOWN_BOX";
 
@@ -412,27 +471,16 @@ const currentWeight =
 const currentAmount =
   Number(box.amount_to_pay || 0);
 
-const isRetailPurchaseSignal =
-  Number(box.mode) === 4 &&
-  currentAmount > 0 &&
-  currentWeight >= minRetailKg;
-
-// =========================
-// SI LA COMPRA YA VOLVIO A CERO,
-// liberamos la caja para una futura compra.
-// =========================
-// =========================
-// RETAIL - LIBERAR CAJA
-// La caja queda lista si:
-// - no hay señal de compra
-// - o el monto/peso bajó casi a cero
-// - o el estado volvió a LISTO / IDLE
-// =========================
 const retailStateNow =
   (box.state || "")
     .toString()
     .trim()
     .toUpperCase();
+
+const isRetailPurchaseSignal =
+  Number(box.mode) === 4 &&
+  currentAmount > 0 &&
+  currentWeight >= minRetailKg;
 
 const isRetailReset =
   Number(box.mode) === 4 &&
@@ -444,26 +492,28 @@ const isRetailReset =
     retailStateNow === "EMPTY"
   );
 
+// =========================
+// Si vemos reset, la caja queda lista.
+// Si había una sesión activa, primero
+// la convertimos en compra.
+// =========================
 if (isRetailReset) {
+
+  if (retailActiveSessions[boxKey]) {
+    finalizeRetailSession(boxKey);
+  }
 
   retailBoxPurchaseOpen[boxKey] =
     false;
 
   retailBoxReady[boxKey] =
     true;
-
-  if (retailPendingTimers[boxKey]) {
-    clearTimeout(retailPendingTimers[boxKey]);
-  }
-
-  delete retailActiveSessions[boxKey];
-  delete retailPendingTimers[boxKey];
 }
 
 // =========================
-// SOLO INICIAR SI:
-// - hay señal de compra
-// - la caja NO tiene una compra abierta
+// Si hay señal de compra válida,
+// y la caja está lista,
+// abrimos/actualizamos sesión.
 // =========================
 if (
   isRetailPurchaseSignal &&
@@ -509,44 +559,16 @@ if (
     clearTimeout(retailPendingTimers[boxKey]);
   }
 
+  // =========================
+  // Si no llega reset, cerramos
+  // automáticamente después de 1.8 s.
+  // =========================
   retailPendingTimers[boxKey] =
     setTimeout(() => {
 
-      const session =
-        retailActiveSessions[boxKey];
+      finalizeRetailSession(boxKey);
 
-      if (!session) return;
-
-      const finalBox =
-        { ...session.box };
-
-      finalBox.weight_kg =
-        session.minWeightKg;
-
-      finalBox.amount_to_pay =
-        session.minAmount;
-
-      addRetailCartItem(finalBox);
-
-      // =========================
-      // BLOQUEAR ESTA CAJA
-      // hasta que amount_to_pay
-      // vuelva a cero.
-      // =========================
-      retailBoxPurchaseOpen[boxKey] =
-        true;
-      retailBoxReady[boxKey] =
-  false;
-
-      delete retailActiveSessions[boxKey];
-      delete retailPendingTimers[boxKey];
-
-      console.log(
-        "RETAIL COMPRA UNICA AGREGADA:",
-        finalBox
-      );
-
-    }, 1500);
+    }, 1800);
 }
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
