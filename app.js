@@ -98,8 +98,6 @@ const productWeightReference = {
   "uvas": { avg_g: 5, min_factor: 1.00 }
 };
 
-let retailPayHoldUntil = 0;
-let retailLastPayState = false;
 
   function formatMoney(value) {
     const n = Number(value || 0);
@@ -688,36 +686,17 @@ if (Number(box.mode) === 1) {
   // Traduce solo después de tener un valor seguro.
   // =========================
   const rawState = (box.state || "-").toString().trim().toUpperCase();
- if (
-  Number(box.mode) === 4 &&
-  rawState === "A PAGAR"
-) {
-  retailPayHoldUntil = Date.now() + 2000;
-  retailLastPayState = true;
-  }
 
 let stateVisual = "-";
-
 if (Number(box.mode) === 2) {
-
   stateVisual = transportStateVisual || "-";
-
-} else if (
-  Number(box.mode) === 4 &&
-  retailLastPayState &&
-  Date.now() < retailPayHoldUntil
-) {
-
-  stateVisual = "A PAGAR";
 
 } else if (rawState === "IDLE") {
 
-  retailLastPayState = false;
   stateVisual = "ESPERA";
 
 } else {
 
-  retailLastPayState = false;
   stateVisual = rawState;
 }
 
