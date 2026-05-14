@@ -369,6 +369,17 @@ if (productRef) {
 // durante una ventana corta guardamos
 // el MENOR peso válido observado.
 // =========================
+// =========================
+// RETAIL INTERACTIVO
+// SESION AUTOMATICA DE RETIRO
+//
+// En vez de agregar cada lectura,
+// agrupamos lecturas de una misma
+// retirada durante una ventana corta.
+//
+// Se guarda el MENOR peso válido
+// observado para evitar picos altos.
+// =========================
 if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
@@ -381,69 +392,95 @@ if (
   const now =
     Date.now();
 
-  const cooldownUntil =
-    retailBoxCooldown[boxKey] || 0;
+  const currentWeight =
+    Number(box.weight_kg || 0);
 
-  if (now > cooldownUntil) {
+  const currentAmount =
+    Number(box.amount_to_pay || 0);
 
-    const currentWeight =
-      Number(box.weight_kg || 0);
+  // =========================
+  // SI NO HAY SESION,
+  // CREAR UNA NUEVA
+  // =========================
+  if (!retailActiveSessions[boxKey]) {
 
-    const currentAmount =
-      Number(box.amount_to_pay || 0);
+    retailActiveSessions[boxKey] = {
+      box: { ...box },
+      minWeightKg: currentWeight,
+      minAmount: currentAmount,
+      startedAt: now,
+      updatedAt: now
+    };
 
-    const existing =
-      retailPendingByBox[boxKey];
+  } else {
 
     // =========================
-    // Si no hay candidato,
-    // creamos uno.
-    // Si ya existe, conservamos
-    // el menor peso válido observado.
+    // SI YA HAY SESION,
+    // conservar menor peso válido
     // =========================
-    if (
-      !existing ||
-      currentWeight < Number(existing.box.weight_kg || 0)
-    ) {
-      retailPendingByBox[boxKey] = {
-        box: { ...box },
-        updatedAt: now
-      };
+    const session =
+      retailActiveSessions[boxKey];
+
+    if (currentWeight < session.minWeightKg) {
+
+      session.minWeightKg =
+        currentWeight;
+
+      session.minAmount =
+        currentAmount;
+
+      session.box =
+        { ...box };
     }
 
-    // =========================
-    // Reiniciar timer de cierre
-    // de ventana para esta caja.
-    // =========================
-    if (retailPendingTimers[boxKey]) {
-      clearTimeout(retailPendingTimers[boxKey]);
-    }
-
-    retailPendingTimers[boxKey] =
-      setTimeout(() => {
-
-        const pending =
-          retailPendingByBox[boxKey];
-
-        if (!pending) return;
-
-        addRetailCartItem(
-          pending.box
-        );
-
-        retailBoxCooldown[boxKey] =
-          Date.now() + 4000;
-
-        delete retailPendingByBox[boxKey];
-        delete retailPendingTimers[boxKey];
-
-        console.log(
-          "RETAIL AGREGADO POR MENOR PESO:",
-          pending.box
-        );
-
-      }, 1800);
+    session.updatedAt =
+      now;
   }
+
+  // =========================
+  // REINICIAR TIMER DE CIERRE
+  // Cada nueva lectura válida extiende
+  // la sesión un poco más.
+  // =========================
+  if (retailPendingTimers[boxKey]) {
+    clearTimeout(retailPendingTimers[boxKey]);
+  }
+
+  retailPendingTimers[boxKey] =
+    setTimeout(() => {
+
+      const session =
+        retailActiveSessions[boxKey];
+
+      if (!session) return;
+
+      const finalBox =
+        { ...session.box };
+
+      // =========================
+      // Asegurar que el carrito use
+      // el menor peso y monto asociado.
+      // =========================
+      finalBox.weight_kg =
+        session.minWeightKg;
+
+      finalBox.amount_to_pay =
+        session.minAmount;
+
+      addRetailCartItem(finalBox);
+
+      retailBoxCooldown[boxKey] =
+        Date.now() + 2000;
+
+      delete retailActiveSessions[boxKey];
+      delete retailPendingTimers[boxKey];
+
+      console.log(
+        "RETAIL SESION AGREGADA:",
+        finalBox
+      );
+
+    }, 1500);
 }
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
