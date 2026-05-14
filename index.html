@@ -9,21 +9,6 @@
   <title>LEWMIS Box</title>
 
   <style>
-    .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-#modeBadge {
-  background: #1e293b;
-  color: #4fc3f7;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: bold;
-}
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -77,284 +62,233 @@
     }
 
     .pay-alert {
-    color: #ff1744 !important;
-    font-size: 34px;
-    animation: blinkPay 0.8s infinite;
+      color: #ff1744 !important;
+      font-size: 34px;
+      animation: blinkPay 0.8s infinite;
     }
 
     @keyframes blinkPay {
-    0% { opacity: 1; }
-    50% { opacity: 0.35; }
-    100% { opacity: 1; }
+      0% { opacity: 1; }
+      50% { opacity: 0.35; }
+      100% { opacity: 1; }
     }
   </style>
 </head>
 
 <body>
   <div class="card">
+
     <h1 id="title">LEWMIS</h1>
-    <!-- =========================
-     BOTONES DE VISTA
-     Dashboard = vista multi-caja
-     Retail interactivo = experiencia cliente
-     Solo se activará cuando la caja esté en modo Retail
-========================= -->
-<!-- =========================
-     BOTON DASHBOARD
-     Vista general multi-caja para finca,
-     distribuidor, supermercado o comprador.
-========================= -->
-<button id="btnDashboard" style="
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#4fc3f7;
-  color:#001018;
-  font-weight:bold;
-  margin-bottom:16px;
-">
-  Dashboard
-</button>
 
-     <!-- =========================
-     VISTA INDIVIDUAL
-     Toda la UI actual de una sola caja.
-     Luego podremos ocultarla cuando entremos
-     al Dashboard multi-caja.
-     ========================= -->
+    <!-- BOTON DASHBOARD -->
+    <button id="btnDashboard" style="
+      width:100%;
+      padding:10px;
+      border:none;
+      border-radius:10px;
+      background:#4fc3f7;
+      color:#001018;
+      font-weight:bold;
+      margin-bottom:16px;
+    ">
+      Dashboard
+    </button>
+
+    <!-- VISTA INDIVIDUAL -->
     <div id="singleView">
-    <div style="display:flex; justify-content:space-between; gap:16px;">
 
-    <div style="flex:1;">
-    <div class="label" id="labelProduct">Producto</div>
-    <div class="value" id="product">-</div>
-    </div>
+      <div style="display:flex; justify-content:space-between; gap:16px;">
+        <div style="flex:1;">
+          <div class="label" id="labelProduct">Producto</div>
+          <div class="value" id="product">-</div>
+        </div>
 
-    <div style="text-align:right;">
-    <div class="label" id="labelPrice">Precio</div>
-    <div class="value" id="price" style="font-size:22px;">-</div>
-    </div>
+        <div style="text-align:right;">
+          <div class="label" id="labelPrice">Precio</div>
+          <div class="value" id="price" style="font-size:22px;">-</div>
+        </div>
+      </div>
 
-    </div>
+      <div id="transportExtra" style="display:none;">
+        <div class="label" id="labelTransportBase">Salida</div>
+        <div class="value" id="transportBase">-</div>
+      </div>
 
-    
-   <div id="transportExtra" style="display:none;">
-   <div class="label" id="labelTransportBase">Salida</div>
-   <div class="value" id="transportBase">-</div>
-   </div>
+      <div id="transportActualBlock" style="display:none;">
+        <div class="label" id="labelTransportActual">Actual</div>
+        <div class="value" id="transportActual">-</div>
+      </div>
 
-    <div id="transportActualBlock" style="display:none;">
-    <div class="label" id="labelTransportActual">Actual</div>
-    <div class="value" id="transportActual">-</div>
-    </div>
-    
-    
-    <div id="transportDeltaBlock" style="display:none;">
-    <div class="label" id="labelTransportDelta">Delta</div>
-    <div class="value" id="transportDelta">-</div>
-    </div>
+      <div id="transportDeltaBlock" style="display:none;">
+        <div class="label" id="labelTransportDelta">Delta</div>
+        <div class="value" id="transportDelta">-</div>
+      </div>
 
-    <div id="weightBlock">
-    <div class="label" id="weightLabel">Peso</div>
-    <div class="value" id="weight">-</div>
-    </div>
+      <div id="weightBlock">
+        <div class="label" id="weightLabel">Peso</div>
+        <div class="value" id="weight">-</div>
+      </div>
 
-    <div id="inventoryExtra" style="display:none;"> 
-    <div class="label" id="labelInventoryBase">Base</div>
-    <div class="value" id="inventoryBase">-</div>
+      <div id="inventoryExtra" style="display:none;">
+        <div class="label" id="labelInventoryBase">Base</div>
+        <div class="value" id="inventoryBase">-</div>
 
-    <div class="label" id="labelInventoryWeight">Peso</div>
-    <div class="value" id="inventoryWeight">-</div>
-  
-    <div class="label" id="labelInventoryDelta">Delta</div>
-    <div class="value" id="inventoryDelta">-</div>
-    </div>
+        <div class="label" id="labelInventoryWeight">Peso</div>
+        <div class="value" id="inventoryWeight">-</div>
 
-    <div id="amountBlock">
-    <div class="label" id="amountLabel">A pagar</div>
-    <div class="value money" id="amount">$ 0,00</div>
-    </div>
+        <div class="label" id="labelInventoryDelta">Delta</div>
+        <div class="value" id="inventoryDelta">-</div>
+      </div>
 
-      <!-- =========================
-     BOTON RETAIL INTERACTIVO
-     Solo se mostrará cuando la caja
-     esté en modo Retail.
-     ========================= -->
-<button id="btnRetailView" style="
-  display:none;
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#ffd54f;
-  color:#001018;
-  font-weight:bold;
-  margin-top:14px;
-  margin-bottom:8px;
-">
-  Ver compra
-</button>
+      <div id="amountBlock">
+        <div class="label" id="amountLabel">A pagar</div>
+        <div class="value money" id="amount">$ 0,00</div>
+      </div>
 
-    <div id="fieldExtra" style="display:none;">
-    <div class="label" id="labelFieldTarget">Meta</div>
-    <div class="value" id="fieldTarget">-</div>
-    </div>
-    
-    <div class="label" id="labelState">Estado</div>
-    <div class="value state" id="state">-</div>
-    <div class="label" id="labelInventoryEvent">Evento</div>
-    <div class="value" id="inventoryEvent">-</div>
-
-    <div class="label" id="labelSensor">Sensor</div>
-    <div class="value" id="sensor">-</div>
-
-    <div class="label" id="labelBox">Caja</div>
-    <div class="value" id="boxId">-</div>
-
-    <div class="label" id="labelSerial">SN</div>
-    <div class="value" id="serialNumber">-</div>
-    
-    <div class="label" id="labelBattery">Batería</div>
-    <div class="value" id="battery">-</div>
-
-    <div class="small" id="updated">Última actualización: -</div>
-    </div>
-  <!-- =========================
-     DASHBOARD MULTI-CAJA
-     Aquí aparecerá la tabla con todas
-     las cajas activas de la finca.
-     Inicialmente oculto.
-========================= -->
-<div id="dashboardView" style="display:none;">
-
-  <div class="label">
-    Cajas activas
-  </div>
-
-  <table style="
-  width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
-  font-size:14px;
-  table-layout:auto;
-">
-
-    <thead>
-      <tr style="
-        color:#4fc3f7;
-        text-align:left;
+      <button id="btnRetailView" style="
+        display:none;
+        width:100%;
+        padding:10px;
+        border:none;
+        border-radius:10px;
+        background:#ffd54f;
+        color:#001018;
+        font-weight:bold;
+        margin-top:14px;
+        margin-bottom:8px;
       ">
-        <th id="thBox">Caja</th>
-        <th id="thProduct">Producto</th>
-        <th id="thMode">Modo</th>
-        <th id="thWeight">Peso</th>
-        <th id="thState">Estado</th>
-        <th id="thBattery">Bat</th>
-      </tr>
-    </thead>
+        Ver compra
+      </button>
 
-    <tbody id="dashboardRows">
-    </tbody>
+      <div id="fieldExtra" style="display:none;">
+        <div class="label" id="labelFieldTarget">Meta</div>
+        <div class="value" id="fieldTarget">-</div>
+      </div>
 
-  </table>
+      <div class="label" id="labelState">Estado</div>
+      <div class="value state" id="state">-</div>
 
-  </div>
+      <div class="label" id="labelInventoryEvent">Evento</div>
+      <div class="value" id="inventoryEvent">-</div>
 
-<!-- =========================
-   RETAIL INTERACTIVO
-   Vista de carrito multi-caja
-   para experiencia comprador.
-   Inicialmente vacía.
-========================= -->
-<div id="retailView" style="display:none;">
+      <div class="label" id="labelSensor">Sensor</div>
+      <div class="value" id="sensor">-</div>
 
-  <div class="label" style="color:#4fc3f7;">
-    Compra actual
-  </div>
+      <div class="label" id="labelBox">Caja</div>
+      <div class="value" id="boxId">-</div>
 
-  <div id="retailCart" style="
-    margin-top:16px;
-    background:#0b1118;
-    border:1px solid #263238;
-    border-radius:12px;
-    padding:12px;
-  ">
-    <div class="small">
-      No hay productos agregados
-    </div>
-  </div>
+      <div class="label" id="labelSerial">SN</div>
+      <div class="value" id="serialNumber">-</div>
 
-  <div style="
-    margin-top:24px;
-    border-top:1px solid #263238;
-    padding-top:16px;
-  ">
+      <div class="label" id="labelBattery">Batería</div>
+      <div class="value" id="battery">-</div>
 
-    <div class="label">
-      Total
+      <div class="small" id="updated">Última actualización: -</div>
+
     </div>
 
-    <div class="value money" id="retailTotal">
-      $ 0,00
-</div>
+    <!-- DASHBOARD MULTI-CAJA -->
+    <div id="dashboardView" style="display:none;">
 
-    <!-- =========================
-     RETAIL INTERACTIVO
-     Simulación de pago demo.
-    ========================= -->
-<button id="btnPayNow" style="
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#66bb6a;
-  color:white;
-  font-weight:bold;
-  margin-top:16px;
-  font-size:18px;
-">
-  Pagar ahora
-</button>
-    <!-- =========================
-     RETAIL INTERACTIVO
-     Limpia el carrito demo
-     para iniciar una nueva compra.
-========================= -->
-<button id="btnClearCart" style="
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#ef5350;
-  color:white;
-  font-weight:bold;
-  margin-top:16px;
-">
-  Vaciar compra
-</button>
+      <div class="label">Cajas activas</div>
 
-    <!-- =========================
-     MENSAJE CHECKOUT RETAIL
-    ========================= -->
-<div id="retailCheckoutMessage" style="
-  display:none;
-  margin-top:18px;
-  padding:14px;
-  border-radius:12px;
-  background:#1b2733;
-  color:#4fc3f7;
-  text-align:center;
-  font-weight:bold;
-  font-size:18px;
-">
-  Procesando pago...
-</div>
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        margin-top:12px;
+        font-size:14px;
+        table-layout:auto;
+      ">
+        <thead>
+          <tr style="color:#4fc3f7; text-align:left;">
+            <th id="thBox">Caja</th>
+            <th id="thProduct">Producto</th>
+            <th id="thMode">Modo</th>
+            <th id="thWeight">Peso</th>
+            <th id="thState">Estado</th>
+            <th id="thBattery">Bat</th>
+          </tr>
+        </thead>
 
-</div>
-</div>
+        <tbody id="dashboardRows"></tbody>
+      </table>
 
-</div>
-<script src="app.js?v=6"></script>
+    </div>
+
+    <!-- RETAIL INTERACTIVO -->
+    <div id="retailView" style="display:none;">
+
+      <div class="label" style="color:#4fc3f7;">
+        Compra actual
+      </div>
+
+      <div id="retailCart" style="
+        margin-top:16px;
+        background:#0b1118;
+        border:1px solid #263238;
+        border-radius:12px;
+        padding:12px;
+      ">
+        <div class="small">No hay productos agregados</div>
+      </div>
+
+      <div style="
+        margin-top:24px;
+        border-top:1px solid #263238;
+        padding-top:16px;
+      ">
+        <div class="label">Total</div>
+
+        <div class="value money" id="retailTotal">
+          $ 0,00
+        </div>
+
+        <button id="btnPayNow" style="
+          width:100%;
+          padding:12px;
+          border:none;
+          border-radius:10px;
+          background:#66bb6a;
+          color:white;
+          font-weight:bold;
+          margin-top:16px;
+          font-size:18px;
+        ">
+          Pagar ahora
+        </button>
+
+        <button id="btnClearCart" style="
+          width:100%;
+          padding:10px;
+          border:none;
+          border-radius:10px;
+          background:#ef5350;
+          color:white;
+          font-weight:bold;
+          margin-top:16px;
+        ">
+          Vaciar compra
+        </button>
+
+        <div id="retailCheckoutMessage" style="
+          display:none;
+          margin-top:18px;
+          padding:14px;
+          border-radius:12px;
+          background:#1b2733;
+          color:#4fc3f7;
+          text-align:center;
+          font-weight:bold;
+          font-size:18px;
+        ">
+          Procesando pago...
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="app.js?v=6"></script>
 </body>
 </html>
