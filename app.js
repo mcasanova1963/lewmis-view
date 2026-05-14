@@ -26,6 +26,17 @@ let dashboardMode = false;
 // evita agregar el mismo evento
 // varias veces.
 // =========================
+// =========================
+// RETAIL INTERACTIVO
+// Estado limpio por caja.
+//
+// Controla que cada caja agregue
+// solo una compra por ciclo:
+//
+// LISTO/IDLE/EMPTY -> armada
+// A PAGAR          -> agrega una vez
+// =========================
+let retailBoxCycle = {};
 let retailCart = [];
 
 let processedRetailEvents = new Set();
@@ -470,6 +481,17 @@ if (productRef) {
 // 5. Si la señal se queda estable,
 //    se finaliza por timer.
 // =========================
+// =========================
+// RETAIL INTERACTIVO
+// CAPTURA AUTOMATICA LIMPIA
+//
+// Regla:
+// - No capturar PESANDO.
+// - Capturar solo al entrar en A PAGAR.
+// - Capturar una sola vez por ciclo.
+// - Rearmar solo cuando vuelve a LISTO/IDLE/EMPTY
+//   o cuando peso/monto caen casi a cero.
+// =========================
 const boxKey =
   box.box_id || "UNKNOWN_BOX";
 
@@ -479,139 +501,92 @@ const currentWeight =
 const currentAmount =
   Number(box.amount_to_pay || 0);
 
-const retailStateNow =
+const rawRetailState =
   (box.state || "")
     .toString()
     .trim()
     .toUpperCase();
 
-const isRetailPurchaseSignal =
-  Number(box.mode) === 4 &&
-  currentAmount > 0 &&
-  currentWeight >= minRetailKg;
+if (!retailBoxCycle[boxKey]) {
+  retailBoxCycle[boxKey] = {
+    armed: false,
+    added: false,
+    lastState: ""
+  };
+}
 
-const isRetailReset =
+const cycle =
+  retailBoxCycle[boxKey];
+
+// =========================
+// RESET / REARMADO
+// La caja queda lista para una nueva compra
+// solo cuando vuelve a estado de reposo
+// o cuando el monto/peso cae casi a cero.
+// =========================
+const isResetState =
+  rawRetailState === "LISTO" ||
+  rawRetailState === "IDLE" ||
+  rawRetailState === "EMPTY" ||
+  rawRetailState === "SIN CARGA" ||
+  rawRetailState === "SIN_CARGA";
+
+const isNearZero =
+  currentAmount <= 2 ||
+  currentWeight < minRetailKg;
+
+if (
   Number(box.mode) === 4 &&
   (
-    currentAmount <= 2 ||
-    currentWeight < minRetailKg ||
-    retailStateNow === "LISTO" ||
-    retailStateNow === "IDLE" ||
-    retailStateNow === "EMPTY"
-  );
-
-// =========================
-// Si vemos reset, la caja queda lista.
-// Si había una sesión activa, primero
-// la convertimos en compra.
-// =========================
-if (isRetailReset) {
-
-  // =========================
-  // Si había una sesión activa,
-  // cerramos UNA compra y bloqueamos.
-  // No dejamos la caja lista todavía.
-  // =========================
-  if (retailActiveSessions[boxKey]) {
-
-    finalizeRetailSession(boxKey);
-
-    retailResetSince[boxKey] =
-      Date.now();
-
-    return;
-  }
-
-  // =========================
-  // Si NO hay sesión activa,
-  // empezamos o continuamos contando
-  // cuánto tiempo lleva en reset.
-  // =========================
-  if (!retailResetSince[boxKey]) {
-    retailResetSince[boxKey] = Date.now();
-  }
-
-  const resetElapsed =
-    Date.now() - retailResetSince[boxKey];
-
-  // =========================
-  // Solo después de 1.2 segundos
-  // estables en reset, queda lista.
-  // =========================
-  if (resetElapsed >= 1200) {
-
-    retailBoxPurchaseOpen[boxKey] =
-      false;
-
-    retailBoxReady[boxKey] =
-      true;
-  }
-}
-
-// =========================
-// Si hay señal de compra válida,
-// y la caja está lista,
-// abrimos/actualizamos sesión.
-// =========================
-if (
-  isRetailPurchaseSignal &&
-  retailBoxReady[boxKey] === true &&
-  !retailBoxPurchaseOpen[boxKey]
+    isResetState ||
+    isNearZero
+  )
 ) {
-  // =========================
-  // Ya no estamos en reset.
-  // =========================
-  delete retailResetSince[boxKey];
-
-  const now =
-    Date.now();
-
-  if (!retailActiveSessions[boxKey]) {
-
-    retailActiveSessions[boxKey] = {
-      box: { ...box },
-      minWeightKg: currentWeight,
-      minAmount: currentAmount,
-      startedAt: now,
-      updatedAt: now
-    };
-
-  } else {
-
-    const session =
-      retailActiveSessions[boxKey];
-
-    if (currentWeight < session.minWeightKg) {
-
-      session.minWeightKg =
-        currentWeight;
-
-      session.minAmount =
-        currentAmount;
-
-      session.box =
-        { ...box };
-    }
-
-    session.updatedAt =
-      now;
-  }
-
-  if (retailPendingTimers[boxKey]) {
-    clearTimeout(retailPendingTimers[boxKey]);
-  }
-
-  // =========================
-  // Si no llega reset, cerramos
-  // automáticamente después de 1.8 s.
-  // =========================
-  retailPendingTimers[boxKey] =
-    setTimeout(() => {
-
-      finalizeRetailSession(boxKey);
-
-    }, 1800);
+  cycle.armed = true;
+  cycle.added = false;
 }
+
+// =========================
+// EVENTO REAL DE COMPRA
+// Solo cuando entra en A PAGAR.
+// No en PESANDO.
+// No por monto > 0.
+// =========================
+const isPayState =
+  rawRetailState === "A PAGAR" ||
+  rawRetailState === "TO PAY";
+
+const enteredPayState =
+  isPayState &&
+  cycle.lastState !== rawRetailState;
+
+if (
+  Number(box.mode) === 4 &&
+  cycle.armed === true &&
+  cycle.added === false &&
+  enteredPayState &&
+  currentAmount > 0 &&
+  currentWeight >= minRetailKg
+) {
+
+  addRetailCartItem(box);
+
+  cycle.added = true;
+  cycle.armed = false;
+
+  console.log(
+    "RETAIL AGREGADO POR EVENTO A PAGAR:",
+    box
+  );
+}
+
+// =========================
+// Guardar último estado visto
+// para detectar transición.
+// =========================
+cycle.lastState =
+  rawRetailState;
+    
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
     
