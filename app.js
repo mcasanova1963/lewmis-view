@@ -83,6 +83,14 @@ let retailBoxPurchaseOpen = {};
 // =========================
 let retailBoxReady = {};
 // =========================
+// RETAIL INTERACTIVO
+// Controla cuánto tiempo una caja
+// lleva realmente en cero/reset.
+// Evita que un pico viejo cree
+// una segunda compra falsa.
+// =========================
+let retailResetSince = {};
+// =========================
 // RETAIL - PESO REFERENCIAL
 // Tabla local de pesos promedio
 // por unidad de producto.
@@ -501,29 +509,43 @@ if (isRetailReset) {
 
   // =========================
   // Si había una sesión activa,
-  // primero cerramos la compra.
-  // IMPORTANTE:
-  // No dejamos la caja lista todavía,
-  // para evitar capturar un segundo pico
-  // viejo inmediatamente después.
+  // cerramos UNA compra y bloqueamos.
+  // No dejamos la caja lista todavía.
   // =========================
   if (retailActiveSessions[boxKey]) {
 
     finalizeRetailSession(boxKey);
 
+    retailResetSince[boxKey] =
+      Date.now();
+
     return;
   }
 
   // =========================
-  // Solo si NO había sesión activa,
-  // la caja queda lista para una
-  // futura compra real.
+  // Si NO hay sesión activa,
+  // empezamos o continuamos contando
+  // cuánto tiempo lleva en reset.
   // =========================
-  retailBoxPurchaseOpen[boxKey] =
-    false;
+  if (!retailResetSince[boxKey]) {
+    retailResetSince[boxKey] = Date.now();
+  }
 
-  retailBoxReady[boxKey] =
-    true;
+  const resetElapsed =
+    Date.now() - retailResetSince[boxKey];
+
+  // =========================
+  // Solo después de 1.2 segundos
+  // estables en reset, queda lista.
+  // =========================
+  if (resetElapsed >= 1200) {
+
+    retailBoxPurchaseOpen[boxKey] =
+      false;
+
+    retailBoxReady[boxKey] =
+      true;
+  }
 }
 
 // =========================
@@ -536,6 +558,10 @@ if (
   retailBoxReady[boxKey] === true &&
   !retailBoxPurchaseOpen[boxKey]
 ) {
+  // =========================
+  // Ya no estamos en reset.
+  // =========================
+  delete retailResetSince[boxKey];
 
   const now =
     Date.now();
