@@ -325,7 +325,18 @@ if (productRef) {
     ) / 1000;
 
 }
-    
+// =========================
+// RETAIL INTERACTIVO
+// Captura compra Retail con espera
+// de estabilización.
+//
+// La lógica:
+// 1. Si hay compra posible, guarda candidato.
+// 2. Espera 1.2 s.
+// 3. Usa el último valor visto.
+// 4. Agrega al carrito.
+// 5. Activa cooldown.
+// =========================
 if (
   Number(box.mode) === 4 &&
   Number(box.amount_to_pay || 0) > 0 &&
@@ -333,71 +344,91 @@ if (
   (
     retailState === "A PAGAR" ||
     retailState === "TO PAY" ||
-    retailState === "PAGAR AHORA"
+    retailState === "PAGAR AHORA" ||
+    retailState === "PESANDO"
   )
 ) {
 
   const boxKey =
     box.box_id || "UNKNOWN_BOX";
 
-  const now = Date.now();
+  const now =
+    Date.now();
 
   const cooldownUntil =
     retailBoxCooldown[boxKey] || 0;
 
-  // =========================
-  // SOLO SI NO ESTA BLOQUEADA
-  // =========================
- if (now > cooldownUntil) {
+  if (now > cooldownUntil) {
 
-  const boxKey =
-    box.box_id || "UNKNOWN_BOX";
-
-  // =========================
-  // GUARDAR CANDIDATO
-  // Esperamos un poco antes
-  // de confirmar la compra.
-  // =========================
-  retailPendingByBox[boxKey] = {
-    box: { ...box },
-    capturedAt: now
-  };
-
-  // =========================
-  // ESPERAR ESTABILIZACION
-  // =========================
-  setTimeout(() => {
-
-    const pending =
+    const existingPending =
       retailPendingByBox[boxKey];
 
-    if (!pending) return;
+    // =========================
+    // Guardamos SIEMPRE el último
+    // valor visto como candidato.
+    // =========================
+    retailPendingByBox[boxKey] = {
+      box: { ...box },
+      capturedAt: now,
+      minRetailKg: minRetailKg,
+      timerStarted:
+        existingPending
+          ? existingPending.timerStarted
+          : false
+    };
 
     // =========================
-    // AGREGAR VALOR FINAL
+    // Solo arrancamos UN timer
+    // por caja.
     // =========================
-    addRetailCartItem(
-      pending.box
-    );
+    if (!retailPendingByBox[boxKey].timerStarted) {
 
-    renderRetailCart();
+      retailPendingByBox[boxKey].timerStarted = true;
 
-    console.log(
-      "RETAIL ESTABLE:",
-      pending.box
-    );
+      setTimeout(() => {
 
-    // =========================
-    // COOLDOWN
-    // =========================
-    retailBoxCooldown[boxKey] =
-      Date.now() + 4000;
+        const pending =
+          retailPendingByBox[boxKey];
 
-    delete retailPendingByBox[boxKey];
+        if (!pending) return;
 
-  }, 1200);
+        const finalWeight =
+          Number(pending.box.weight_kg || 0);
 
-}
+        const finalAmount =
+          Number(pending.box.amount_to_pay || 0);
+
+        // =========================
+        // Validación final.
+        // Si al final cayó por debajo
+        // del mínimo, no agregamos.
+        // =========================
+        if (
+          finalWeight < pending.minRetailKg ||
+          finalAmount <= 0
+        ) {
+          delete retailPendingByBox[boxKey];
+          return;
+        }
+
+        addRetailCartItem(
+          pending.box
+        );
+
+        console.log(
+          "RETAIL ESTABLE:",
+          pending.box
+        );
+
+        retailBoxCooldown[boxKey] =
+          Date.now() + 4000;
+
+        delete retailPendingByBox[boxKey];
+
+      }, 1200);
+    }
+  }
+}    
 
       const demoSensor = box.demo_sensor || "OFF";
       const demoValue = box.demo_sensor_value || "-";
