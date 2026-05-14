@@ -43,62 +43,12 @@ let processedRetailEvents = new Set();
 
 // =========================
 // RETAIL INTERACTIVO
-// Evita capturar muchas veces
-// la misma compra mientras la caja
-// sigue reportando cambios pequeños.
-// =========================
-let retailBoxCooldown = {};
-// =========================
-// RETAIL INTERACTIVO
-// Candidatos pendientes por caja.
-// Evita agregar picos transitorios
-// antes de que el peso final se estabilice.
-// =========================
-let retailPendingByBox = {};
-// =========================
-// RETAIL INTERACTIVO
-// Timers por caja para cerrar
-// una ventana de captura.
-// =========================
-let retailPendingTimers = {};
-// =========================
-// RETAIL INTERACTIVO
-// Sesiones activas de retiro.
+// Control de ciclo por caja.
 //
-// Cada caja mantiene:
-//
-// - menor peso válido visto
-// - último momento actualizado
-// - timer de cierre
-//
-// Así evitamos capturar
-// picos transitorios.
+// Evita agregar varias veces
+// la misma compra.
 // =========================
-let retailActiveSessions = {};
-// =========================
-// RETAIL INTERACTIVO
-// Evita reabrir compras viejas.
-// Una caja solo puede generar
-// una compra por ciclo:
-// amount_to_pay > 0 → compra
-// amount_to_pay = 0 → se libera
-// =========================
-let retailBoxPurchaseOpen = {};
-// =========================
-// RETAIL INTERACTIVO
-// La caja solo puede capturar
-// una compra después de haber visto
-// primero amount_to_pay = 0.
-// Esto evita cargar compras viejas
-// que quedaron en Supabase.
-// =========================
-let retailBoxReady = {};
-// =========================
-// RETAIL INTERACTIVO
-// Controla cuánto tiempo una caja
-// lleva realmente en cero/reset.
-// Evita que un pico viejo cree
-// una segunda compra falsa.
+let retailBoxCycle = {};
 // =========================
 let retailResetSince = {};
 // =========================
