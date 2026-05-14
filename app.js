@@ -421,11 +421,35 @@ const isRetailPurchaseSignal =
 // SI LA COMPRA YA VOLVIO A CERO,
 // liberamos la caja para una futura compra.
 // =========================
-if (!isRetailPurchaseSignal) {
+// =========================
+// RETAIL - LIBERAR CAJA
+// La caja queda lista si:
+// - no hay señal de compra
+// - o el monto/peso bajó casi a cero
+// - o el estado volvió a LISTO / IDLE
+// =========================
+const retailStateNow =
+  (box.state || "")
+    .toString()
+    .trim()
+    .toUpperCase();
+
+const isRetailReset =
+  Number(box.mode) === 4 &&
+  (
+    currentAmount <= 2 ||
+    currentWeight < minRetailKg ||
+    retailStateNow === "LISTO" ||
+    retailStateNow === "IDLE" ||
+    retailStateNow === "EMPTY"
+  );
+
+if (isRetailReset) {
 
   retailBoxPurchaseOpen[boxKey] =
     false;
-   retailBoxReady[boxKey] =
+
+  retailBoxReady[boxKey] =
     true;
 
   if (retailPendingTimers[boxKey]) {
