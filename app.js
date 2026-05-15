@@ -512,34 +512,6 @@ if (
   document.getElementById("weight").innerText = formattedWeight;
 }
 
-// =========================
-// HTML - BASE RETAIL
-// Si estamos en modo Retail y Supabase
-// ya trae retail_base_kg, usamos el campo
-// Meta para mostrar la base de venta.
-//
-// Esto evita agregar nuevos elementos HTML
-// por ahora y mantiene el cambio simple.
-// =========================
-if (Number(box.mode) === 4) {
-
-  const retailBaseKg =
-    Number(box.retail_base_kg || 0);
-
-  const retailBaseSet =
-    Number(box.retail_base_set || 0);
-
-  fieldExtra.style.display = "block";
-
-  document.getElementById("labelFieldTarget").innerText =
-    "Base";
-
-  document.getElementById("fieldTarget").innerText =
-    retailBaseSet === 1
-      ? formatWeight(retailBaseKg, unit)
-      : "-";
-}
-
     // =========================
     // ETIQUETA PRINCIPAL DE PESO
     // Traduce Peso / Actual / Llevas según idioma web.
@@ -668,7 +640,31 @@ if (Number(box.mode) === 1) {
   document.getElementById("amount").innerText =
     formatMoney(box.amount_to_pay);
 
-  fieldExtra.style.display = "none";
+  // =========================
+  // RETAIL - BASE DE VENTA HTML
+  // En modo Retail reutilizamos el
+  // bloque de Meta para mostrar la
+  // Base Retail recibida desde Supabase.
+  //
+  // retail_base_kg viene en kg.
+  // retail_base_set indica si la base
+  // está activa.
+  // =========================
+  fieldExtra.style.display = "block";
+
+  document.getElementById("labelFieldTarget").innerText =
+    "Base";
+
+  const retailBaseKg =
+    Number(box.retail_base_kg || 0);
+
+  const retailBaseSet =
+    Number(box.retail_base_set || 0);
+
+  document.getElementById("fieldTarget").innerText =
+    retailBaseSet === 1
+      ? formatWeight(retailBaseKg, unit)
+      : "-";
 
 } else {
 
