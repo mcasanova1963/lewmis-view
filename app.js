@@ -128,7 +128,7 @@ function tr(key) {
     "Peso": en ? "Weight" : "Peso",
     "Actual": en ? "Current" : "Actual",
     "Llevas": en ? "Taken" : "Llevas",
-
+    "En caja": en ? "In box" : "En caja",
     "Valor": en ? "Value" : "Valor",
     "A pagar": en ? "To pay" : "A pagar",
     "A PAGAR": en ? "TO PAY" : "A PAGAR",
@@ -659,7 +659,7 @@ if (Number(box.mode) === 1) {
   // queda disponible en la caja.
   // =========================
   document.getElementById("labelFieldTarget").innerText =
-    "En caja";
+  tr("En caja");
 
   const retailBaseKg =
     Number(box.retail_base_kg || 0);
