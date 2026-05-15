@@ -661,17 +661,24 @@ if (Number(box.mode) === 1) {
   document.getElementById("labelFieldTarget").innerText =
   tr("En caja");
 
-  const retailBaseKg =
-    Number(box.retail_base_kg || 0);
+  // =========================
+// RETAIL - EN CAJA HTML
+// Muestra el peso vivo disponible
+// físicamente en la caja.
+//
+// Este valor viene de Supabase como:
+// retail_queda_kg
+//
+// Importante:
+// retail_base_kg es base técnica.
+// weight_kg es lo que el cliente lleva.
+// retail_queda_kg es lo que queda en caja.
+// =========================
+const retailQuedaKg =
+  Number(box.retail_queda_kg || 0);
 
-  const retailBaseSet =
-    Number(box.retail_base_set || 0);
-
-  document.getElementById("fieldTarget").innerText =
-    retailBaseSet === 1
-      ? formatWeight(retailBaseKg, unit)
-      : "-";
-
+document.getElementById("fieldTarget").innerText =
+  formatWeight(retailQuedaKg, unit);
 } else {
 
   amountBlock.style.display = "none";
