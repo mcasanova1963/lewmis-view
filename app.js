@@ -492,17 +492,16 @@ setText("thBattery", tr("Batería"));
     document.getElementById("price").innerText =
     box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
 
-    const formattedWeight = formatWeight(box.weight_kg, unit);
+// =========================
+// HTML - PESO PRINCIPAL
+// En Retail, weight_kg representa
+// lo que el cliente lleva.
+// =========================
+const formattedWeight =
+  formatWeight(box.weight_kg, unit);
 
 console.log("FORMATTED WEIGHT:", formattedWeight);
 
-// =========================
-// RETAIL
-// No mostrar peso vivo mientras
-// la caja está pesando o con ruido.
-// Solo mostrarlo cuando está en
-// estado final A PAGAR.
-// =========================
 if (
   Number(box.mode) === 4 &&
   rawRetailState !== "A PAGAR" &&
@@ -511,6 +510,34 @@ if (
   document.getElementById("weight").innerText = "-";
 } else {
   document.getElementById("weight").innerText = formattedWeight;
+}
+
+// =========================
+// HTML - BASE RETAIL
+// Si estamos en modo Retail y Supabase
+// ya trae retail_base_kg, usamos el campo
+// Meta para mostrar la base de venta.
+//
+// Esto evita agregar nuevos elementos HTML
+// por ahora y mantiene el cambio simple.
+// =========================
+if (Number(box.mode) === 4) {
+
+  const retailBaseKg =
+    Number(box.retail_base_kg || 0);
+
+  const retailBaseSet =
+    Number(box.retail_base_set || 0);
+
+  fieldExtra.style.display = "block";
+
+  document.getElementById("labelFieldTarget").innerText =
+    "Base";
+
+  document.getElementById("fieldTarget").innerText =
+    retailBaseSet === 1
+      ? formatWeight(retailBaseKg, unit)
+      : "-";
 }
 
     // =========================
