@@ -635,50 +635,42 @@ if (Number(box.mode) === 1) {
 
 } else if (Number(box.mode) === 4) {
 
+  // =========================
+  // RETAIL - A PAGAR
+  // amount_to_pay viene de Supabase
+  // y representa la compra confirmada.
+  // =========================
   amountBlock.style.display = "block";
-  amountLabel.innerText = tr("A pagar");
+
+  amountLabel.innerText =
+    tr("A pagar");
+
   document.getElementById("amount").innerText =
     formatMoney(box.amount_to_pay);
 
   // =========================
-  // RETAIL - BASE DE VENTA HTML
-  // En modo Retail reutilizamos el
-  // bloque de Meta para mostrar la
-  // Base Retail recibida desde Supabase.
+  // RETAIL - EN CAJA
+  // Muestra el peso vivo disponible
+  // físicamente en la caja.
   //
-  // retail_base_kg viene en kg.
-  // retail_base_set indica si la base
-  // está activa.
+  // Fuente correcta:
+  // retail_queda_kg
+  //
+  // NO usar aquí:
+  // retail_base_kg = base técnica
+  // weight_kg = lo que el cliente lleva
   // =========================
   fieldExtra.style.display = "block";
 
-  // =========================
-  // RETAIL - TEXTO HTML
-  // La base Retail es técnica.
-  // En pantalla mostramos cuánto
-  // queda disponible en la caja.
-  // =========================
   document.getElementById("labelFieldTarget").innerText =
-  tr("En caja");
+    tr("En caja");
 
-  // =========================
-// RETAIL - EN CAJA HTML
-// Muestra el peso vivo disponible
-// físicamente en la caja.
-//
-// Este valor viene de Supabase como:
-// retail_queda_kg
-//
-// Importante:
-// retail_base_kg es base técnica.
-// weight_kg es lo que el cliente lleva.
-// retail_queda_kg es lo que queda en caja.
-// =========================
-const retailQuedaKg =
-  Number(box.retail_queda_kg || 0);
+  const retailQuedaKg =
+    Number(box.retail_queda_kg || 0);
 
-document.getElementById("fieldTarget").innerText =
-  formatWeight(retailQuedaKg, unit);
+  document.getElementById("fieldTarget").innerText =
+    formatWeight(retailQuedaKg, unit);
+
 } else {
 
   amountBlock.style.display = "none";
