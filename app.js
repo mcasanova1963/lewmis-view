@@ -652,8 +652,14 @@ if (Number(box.mode) === 1) {
   // =========================
   fieldExtra.style.display = "block";
 
+  // =========================
+  // RETAIL - TEXTO HTML
+  // La base Retail es técnica.
+  // En pantalla mostramos cuánto
+  // queda disponible en la caja.
+  // =========================
   document.getElementById("labelFieldTarget").innerText =
-    "Base";
+    "En caja";
 
   const retailBaseKg =
     Number(box.retail_base_kg || 0);
