@@ -502,15 +502,17 @@ const formattedWeight =
 
 console.log("FORMATTED WEIGHT:", formattedWeight);
 
-if (
-  Number(box.mode) === 4 &&
-  rawRetailState !== "A PAGAR" &&
-  rawRetailState !== "TO PAY"
-) {
-  document.getElementById("weight").innerText = "-";
-} else {
-  document.getElementById("weight").innerText = formattedWeight;
-}
+// =========================
+// HTML - PESO PRINCIPAL
+// En Retail, weight_kg representa
+// "Llevas", es decir, el peso retirado
+// por el cliente.
+//
+// Debe mostrarse todo el tiempo,
+// no solo cuando aparece A PAGAR.
+// =========================
+document.getElementById("weight").innerText =
+  formattedWeight;
 
     // =========================
     // ETIQUETA PRINCIPAL DE PESO
