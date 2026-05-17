@@ -125,6 +125,53 @@ const productWeightReference = {
   return roundedKg.toFixed(2) + " kg";
 }
 // =========================
+// TRANSPORTE - EVENTO VISUAL HTML
+// El firmware puede enviar EVENTO="-"
+// aunque el estado final sea FALTANTE
+// o EXCESO.
+//
+// Para el dashboard remoto mostramos
+// un evento interpretado más claro.
+// No cambia firmware.
+// No cambia Supabase.
+// Solo mejora la lectura visual.
+// =========================
+function getTransportVisualEvent(box) {
+  const mode =
+    Number(box.mode || 0);
+
+  if (mode !== 2) {
+    return box.event || box.inventory_event || "-";
+  }
+
+  const rawEvent =
+    String(
+      box.event ||
+      box.transport_event ||
+      box.inventory_event ||
+      "-"
+    ).trim();
+
+  if (rawEvent !== "-" && rawEvent !== "") {
+    return rawEvent;
+  }
+
+  const state =
+    String(box.state || "").trim().toUpperCase();
+
+  if (state === "FALTANTE" || state === "MISSING") {
+    return tr("FALTANTE EN RECEPCIÓN");
+  }
+
+  if (state === "EXCESO" || state === "EXCESS") {
+    return tr("EXCESO EN RECEPCIÓN");
+  }
+
+  return "-";
+}
+
+
+// =========================
 // TRADUCCION WEB
 // Devuelve texto según idioma.
 // =========================
@@ -170,6 +217,8 @@ function tr(key) {
     "RETIRO": en ? "REMOVED" : "RETIRO",
     "ADICION": en ? "ADDED" : "ADICION",
     "MANIPULADA": en ? "HANDLED" : "MANIPULADA",
+    "FALTANTE EN RECEPCIÓN": en ? "MISSING AT RECEIPT" : "FALTANTE EN RECEPCIÓN",
+    "EXCESO EN RECEPCIÓN": en ? "EXCESS AT RECEIPT" : "EXCESO EN RECEPCIÓN",
 
     "Producto": en ? "Product" : "Producto",
     "Precio": en ? "Price" : "Precio",
@@ -578,50 +627,100 @@ document.getElementById("weight").innerText =
 
   document.getElementById("transportBase").innerText =
     formatWeight(box.transport_base_kg || 0, unit);
+
   document.getElementById("transportActual").innerText =
     formatWeight(box.transport_actual_kg ?? box.weight_kg ?? 0, unit);
 
-  const transportState = (box.state || "").toString().trim().toUpperCase();
+  const transportState =
+    (box.state || "").toString().trim().toUpperCase();
 
-  const deltaKg = Number(box.transport_delta_kg || 0);
-  const deltaGrams = Math.round((deltaKg * 1000) / 10) * 10;
+  const deltaKg =
+    Number(box.transport_delta_kg || 0);
 
+  const deltaGrams =
+    Math.round((deltaKg * 1000) / 10) * 10;
 
   if (transportState === "IDLE") {
-  transportStateVisual = "ESPERA";
+    transportStateVisual = "ESPERA";
   }
 
   if (
-  transportState === "OK" ||
-  transportState === "FALTANTE" ||
-  transportState === "EXCESO" ||
-  transportState === "RECIBIDO" ||
-  transportState === "VACIA"
-) {
-  if (unit === "kg" && Math.abs(deltaKg) < 1) {
-    document.getElementById("transportDelta").innerText = deltaGrams + " g";
+    transportState === "OK" ||
+    transportState === "FALTANTE" ||
+    transportState === "EXCESO" ||
+    transportState === "RECIBIDO" ||
+    transportState === "VACIA"
+  ) {
+    if (unit === "kg" && Math.abs(deltaKg) < 1) {
+      document.getElementById("transportDelta").innerText =
+        deltaGrams + " g";
+    } else {
+      document.getElementById("transportDelta").innerText =
+        formatWeight(deltaKg, unit);
+    }
+
+    if (transportState !== "RECIBIDO") {
+      if (Math.abs(deltaGrams) <= 10) {
+        transportStateVisual = "OK";
+      } else if (deltaGrams < 0) {
+        transportStateVisual = "FALTANTE";
+      } else {
+        transportStateVisual = "EXCESO";
+      }
+    }
   } else {
-    document.getElementById("transportDelta").innerText =
-      formatWeight(deltaKg, unit);
+    document.getElementById("transportDelta").innerText = "-";
   }
 
-  if (transportState !== "RECIBIDO") {
-    if (Math.abs(deltaGrams) <= 10) {
-      transportStateVisual = "OK";
-    } else if (deltaGrams < 0) {
-      transportStateVisual = "FALTANTE";
-    } else {
-      transportStateVisual = "EXCESO";
-    }
+  // =========================
+  // TRANSPORTE - EVENTO VISUAL HTML
+  // Creamos una línea de evento dentro
+  // del bloque Transporte sin modificar
+  // el archivo HTML.
+  // =========================
+  let transportEventLine =
+    document.getElementById("transportEventLine");
+
+  if (!transportEventLine) {
+    transportEventLine =
+      document.createElement("div");
+
+    transportEventLine.id =
+      "transportEventLine";
+
+    transportEventLine.className =
+      "row";
+
+    transportEventLine.innerHTML = `
+      <span>${tr("Evento")}:</span>
+      <b id="transportEventValue">-</b>
+    `;
+
+    transportExtra.appendChild(transportEventLine);
   }
-} else {
-  document.getElementById("transportDelta").innerText = "-";
-}
+
+  const transportEventValue =
+    document.getElementById("transportEventValue");
+
+  if (transportEventValue) {
+    transportEventValue.innerText =
+      getTransportVisualEvent(box);
+  }
+
+  transportEventLine.style.display =
+    "flex";
 
 } else {
   transportExtra.style.display = "none";
   transportActualBlock.style.display = "none";
   transportDeltaBlock.style.display = "none";
+
+  const transportEventLine =
+    document.getElementById("transportEventLine");
+
+  if (transportEventLine) {
+    transportEventLine.style.display = "none";
+  }
 }
 
 const inventoryExtra = document.getElementById("inventoryExtra");
