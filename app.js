@@ -987,8 +987,28 @@ if (btnPayNow) {
   function addRetailCartItem(box) {
   console.log("INTENTO AGREGAR AL CARRITO:", box);
     
- const eventKey =
-  `${box.box_id || "-"}|${box.updated_at || "-"}|${box.amount_to_pay || 0}`;
+// =========================
+// RETAIL - CLAVE DE EVENTO
+// Evita duplicados en carrito.
+//
+// Usamos:
+// caja + peso comprado + valor + ventana de tiempo
+//
+// La ventana redondea updated_at a bloques
+// de 3 segundos para agrupar lecturas del
+// mismo evento A PAGAR.
+// =========================
+const eventTimeBucket =
+  Math.floor(Number(box.updated_at || Date.now()) / 3000);
+
+const eventWeight =
+  Number(box.weight_kg || 0).toFixed(3);
+
+const eventAmount =
+  Number(box.amount_to_pay || 0).toFixed(0);
+
+const eventKey =
+  `${box.box_id || "-"}|${eventTimeBucket}|${eventWeight}|${eventAmount}`;
 
 console.log("EVENT KEY:", eventKey);
 
