@@ -670,12 +670,33 @@ if (Number(box.mode) === 1) {
   // y representa la compra confirmada.
   // =========================
   amountBlock.style.display = "block";
+amountLabel.innerText = tr("A pagar");
 
-  amountLabel.innerText =
-    tr("A pagar");
+// =========================
+// RETAIL - A PAGAR VISUAL HTML
+// Calculamos A PAGAR usando el mismo
+// peso visual que mostramos en Llevas.
+//
+// Esto alinea:
+// Llevas visual
+// A pagar
+// Carrito
+// =========================
+const retailLlevasVisualKg =
+  Number(
+    box.retail_llevas_visual_kg ??
+    box.weight_kg ??
+    0
+  );
 
-  document.getElementById("amount").innerText =
-    formatMoney(box.amount_to_pay);
+const retailPrice =
+  Number(box.price_per_kg || 0);
+
+const amountVisual =
+  retailLlevasVisualKg * retailPrice;
+
+document.getElementById("amount").innerText =
+  formatMoney(amountVisual);
 
   // =========================
   // RETAIL - EN CAJA
@@ -1060,11 +1081,24 @@ if (processedRetailEvents.has(eventKey)) {
 
   processedRetailEvents.add(eventKey);
 
- retailCart.push({
+const cartWeightKg =
+  Number(
+    box.retail_llevas_visual_kg ??
+    box.weight_kg ??
+    0
+  );
+
+const cartPrice =
+  Number(box.price_per_kg || 0);
+
+const cartAmount =
+  cartWeightKg * cartPrice;
+
+retailCart.push({
   box_id: box.box_id || "-",
   product: box.product || "-",
-  weight_kg: Number(box.weight_kg || 0),
-  amount_to_pay: Number(box.amount_to_pay || 0),
+  weight_kg: cartWeightKg,
+  amount_to_pay: cartAmount,
   unit: (box.unit || "kg").toLowerCase(),
   updated_at: box.updated_at || Date.now()
 });
