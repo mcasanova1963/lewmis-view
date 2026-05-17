@@ -510,8 +510,22 @@ setText("thBattery", tr("Batería"));
 // En Retail, weight_kg representa
 // lo que el cliente lleva.
 // =========================
+// =========================
+// HTML - PESO PRINCIPAL / LLEVAS
+// En Retail usamos el valor visual
+// enviado desde firmware vía Android,
+// igual al mostrado en TFT.
+//
+// Si no existe, usamos weight_kg
+// como respaldo.
+// =========================
+const weightForDisplay =
+  Number(box.mode) === 4
+    ? (box.retail_llevas_visual_kg ?? box.weight_kg)
+    : box.weight_kg;
+
 const formattedWeight =
-  formatWeight(box.weight_kg, unit);
+  formatWeight(weightForDisplay, unit);
 
 console.log("FORMATTED WEIGHT:", formattedWeight);
 
@@ -680,11 +694,23 @@ if (Number(box.mode) === 1) {
   document.getElementById("labelFieldTarget").innerText =
     tr("En caja");
 
-  const retailQuedaKg =
-    Number(box.retail_queda_kg || 0);
+  // =========================
+// RETAIL - EN CAJA HTML
+// Usamos el valor visual del firmware,
+// igual al mostrado en TFT y Android.
+//
+// Si no existe, usamos retail_queda_kg
+// como respaldo.
+// =========================
+const retailQuedaKg =
+  Number(
+    box.retail_queda_visual_kg ??
+    box.retail_queda_kg ??
+    0
+  );
 
-  document.getElementById("fieldTarget").innerText =
-    formatWeight(retailQuedaKg, unit);
+document.getElementById("fieldTarget").innerText =
+  formatWeight(retailQuedaKg, unit);
 
 } else {
 
