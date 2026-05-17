@@ -100,16 +100,29 @@ const productWeightReference = {
   }
 
   function formatWeight(kg, unit) {
-  console.log("FORMAT UNIT:", unit);
-  const v = Number(kg || 0);
+  const rawKg =
+    Number(kg || 0);
+
+  // =========================
+  // HTML - PESO VISUAL ESTABLE
+  // Redondeo visual a pasos de 10 g.
+  // No cambia Supabase.
+  // No cambia carrito.
+  // No cambia cálculos internos.
+  // =========================
+  const roundedKg =
+    Math.round((rawKg * 1000) / 10) * 10 / 1000;
 
   if (unit === "lb") {
-    const lb = v * 2.20462;
+    const lb = roundedKg * 2.20462;
     return lb.toFixed(2) + " lb";
   }
 
-  if (Math.abs(v) < 1) return Math.round(v * 1000) + " g";
-  return v.toFixed(2) + " kg";
+  if (Math.abs(roundedKg) < 1) {
+    return Math.round(roundedKg * 1000) + " g";
+  }
+
+  return roundedKg.toFixed(2) + " kg";
 }
 // =========================
 // TRADUCCION WEB
