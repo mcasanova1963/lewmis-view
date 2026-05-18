@@ -144,16 +144,22 @@ function getTransportVisualEvent(box) {
     return box.event || box.inventory_event || "-";
   }
 
+  // =========================
+  // TRANSPORTE - EVENTO REAL
+  // En modo Transporte NO usamos
+  // inventory_event, porque puede traer
+  // valores viejos como RETIRO / ADICION
+  // del modo Inventario.
+  // =========================
   const rawEvent =
     String(
-      box.event ||
       box.transport_event ||
-      box.inventory_event ||
+      box.event ||
       "-"
     ).trim();
 
   if (rawEvent !== "-" && rawEvent !== "") {
-    return rawEvent;
+    return tr(rawEvent.toUpperCase());
   }
 
   const state =
@@ -169,7 +175,6 @@ function getTransportVisualEvent(box) {
 
   return "-";
 }
-
 
 // =========================
 // TRADUCCION WEB
@@ -682,22 +687,30 @@ document.getElementById("weight").innerText =
     document.getElementById("transportEventLine");
 
   if (!transportEventLine) {
-    transportEventLine =
-      document.createElement("div");
+  transportEventLine =
+    document.createElement("div");
 
-    transportEventLine.id =
-      "transportEventLine";
+  transportEventLine.id =
+    "transportEventLine";
 
-    transportEventLine.className =
-      "row";
+  transportEventLine.className =
+    "row";
 
-    transportEventLine.innerHTML = `
-      <span>${tr("Evento")}:</span>
-      <b id="transportEventValue">-</b>
-    `;
+  transportEventLine.innerHTML = `
+    <span>${tr("Evento")}:</span>
+    <b id="transportEventValue">-</b>
+  `;
 
-    transportExtra.appendChild(transportEventLine);
-  }
+  // =========================
+  // TRANSPORTE - UBICACION EVENTO
+  // Insertar después de Delta,
+  // no dentro del bloque Salida.
+  // =========================
+  transportDeltaBlock.insertAdjacentElement(
+    "afterend",
+    transportEventLine
+  );
+}
 
   const transportEventValue =
     document.getElementById("transportEventValue");
