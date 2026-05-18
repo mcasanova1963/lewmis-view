@@ -972,59 +972,68 @@ if (sensorEl) {
  btn.addEventListener("click", () => {
 
   // =========================
-  // SI ESTAMOS EN RETAIL VIEW
-  // volvemos a la compra normal.
+  // BOTON ADMINISTRACION
+  // Abre/cierra una pantalla separada
+  // de administración basada en dashboardView.
+  //
+  // No cambia modo.
+  // No toca Android.
+  // No toca firmware.
   // =========================
+
+  const singleView =
+    document.getElementById("singleView");
+
+  const dashboardView =
+    document.getElementById("dashboardView");
+
   const retailView =
     document.getElementById("retailView");
 
-  if (retailView.style.display === "block") {
-
-    retailView.style.display = "none";
-
-    document.getElementById("singleView").style.display =
-      "block";
-
-    document.getElementById("title").innerText =
-      "LEWMIS - Retail";
-
-    btn.innerText = "Dashboard";
-
-    return;
-  }
-
   dashboardMode = !dashboardMode;
 
-    // =========================
-    // MOSTRAR / OCULTAR VISTAS
-    // =========================
-    document.getElementById("singleView").style.display =
-      dashboardMode ? "none" : "block";
+  // =========================
+  // MOSTRAR ADMIN / DASHBOARD
+  // =========================
+  if (dashboardMode) {
 
-    document.getElementById("dashboardView").style.display =
-      dashboardMode ? "block" : "none";
+    singleView.style.display =
+      "none";
 
-    // =========================
-    // CAMBIAR TEXTO BOTON
-    // =========================
-    // =========================
-    // TEXTO BOTON PRINCIPAL
-    // =========================
-    if (dashboardMode) {
-    btn.innerText = "Vista individual";
-    } else {
-    btn.innerText = "Dashboard";
+    dashboardView.style.display =
+      "block";
+
+    if (retailView) {
+      retailView.style.display =
+        "none";
     }
-    // =========================
-    // TITULO SEGUN VISTA
-    // En dashboard no mostramos modo,
-    // porque es una vista general multi-caja.
-   // =========================
-   document.getElementById("title").innerText =
-  dashboardMode
-    ? "LEWMIS Dashboard"
-    : "LEWMIS";
-  });
+
+    document.getElementById("title").innerText =
+      "LEWMIS Administración";
+
+    btn.innerText =
+      "Volver";
+
+  } else {
+
+    singleView.style.display =
+      "block";
+
+    dashboardView.style.display =
+      "none";
+
+    if (retailView) {
+      retailView.style.display =
+        "none";
+    }
+
+    document.getElementById("title").innerText =
+      "LEWMIS";
+
+    btn.innerText =
+      "Administración";
+  }
+});
     // =========================
    // RETAIL INTERACTIVO
    // Cambia desde vista individual
