@@ -951,6 +951,8 @@ if (sensorEl) {
   document.getElementById("btnOpenDashboard");
 const btnBackFromAdmin =
   document.getElementById("btnBackFromAdmin");
+    const btnBackFromDashboard =
+  document.getElementById("btnBackFromDashboard");
   // =========================
   // BOTON RETAIL VIEW
   // Abre la pantalla de compra
@@ -1036,6 +1038,36 @@ if (btnOpenDashboard) {
 
     document.getElementById("title").innerText =
       "LEWMIS Dashboard";
+
+    // =========================
+// DASHBOARD - VOLVER A ADMIN
+// =========================
+if (btnBackFromDashboard) {
+  btnBackFromDashboard.addEventListener("click", () => {
+
+    dashboardMode = false;
+
+    document.getElementById("dashboardView").style.display =
+      "none";
+
+    document.getElementById("adminView").style.display =
+      "block";
+
+    document.getElementById("singleView").style.display =
+      "none";
+
+    const retailView =
+      document.getElementById("retailView");
+
+    if (retailView) {
+      retailView.style.display =
+        "none";
+    }
+
+    document.getElementById("title").innerText =
+      "LEWMIS Administración";
+  });
+}
   });
 }
 
