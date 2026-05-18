@@ -1058,7 +1058,7 @@ if (btnRetailView) {
     // UX RETAIL
     // El botón principal ahora
     // permite volver a la compra.
-btn.innerText = "Seguir comprando";
+btn.innerText = "Volver";
   });
 }
 // =========================
