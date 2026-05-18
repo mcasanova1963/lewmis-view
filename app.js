@@ -248,7 +248,7 @@ function tr(key) {
     "VACIA": en ? "EMPTY" : "VACIA",
     "IDLE": en ? "WAIT" : "ESPERA",
     "SIN_BASE": en ? "NO_BASE" : "SIN_BASE",
-
+    "RECEPCIÓN OK": en ? "RECEIPT OK" : "RECEPCIÓN OK",
     "Evento": en ? "Event" : "Evento",
     "RETIRO": en ? "REMOVED" : "RETIRO",
     "ADICION": en ? "ADDED" : "ADICION",
