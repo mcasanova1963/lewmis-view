@@ -171,23 +171,25 @@ function getTransportVisualEvent(box) {
     Math.round((deltaKg * 1000) / 10) * 10;
 
   // =========================
-  // TRANSPORTE - EVENTO POR ESTADO
-  // Antes de RECIBIDO, usamos el estado.
+  // ANTES DE RECIBIR
+  // Si todavía no se presionó RECIBIR,
+  // el evento debe ser simplemente:
+  // FALTANTE / EXCESO
   // =========================
   if (state === "FALTANTE" || state === "MISSING") {
-    return tr("FALTANTE EN RECEPCIÓN");
+    return tr("FALTANTE");
   }
 
   if (state === "EXCESO" || state === "EXCESS") {
-    return tr("EXCESO EN RECEPCIÓN");
+    return tr("EXCESO");
   }
 
   // =========================
-  // TRANSPORTE - EVENTO AL RECIBIR
-  // Cuando el estado pasa a RECIBIDO,
-  // el estado ya no dice FALTANTE/EXCESO,
-  // pero el delta final todavía permite
-  // interpretar el resultado.
+  // DESPUES DE RECIBIR
+  // Solo cuando el estado ya es RECIBIDO
+  // interpretamos el delta final como:
+  // FALTANTE EN RECEPCIÓN
+  // EXCESO EN RECEPCIÓN
   // =========================
   if (state === "RECIBIDO" || state === "RECEIVED") {
     if (deltaGrams < -10) {
