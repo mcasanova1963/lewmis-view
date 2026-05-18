@@ -279,6 +279,52 @@ function setText(id, text) {
   if (el) el.innerText = text;
 }
 
+// =========================
+// ADMIN - ENVIAR COMANDO A SUPABASE
+// Crea un comando pendiente para que
+// Android lo lea y lo envíe por Bluetooth
+// al ESP32.
+// =========================
+async function sendBoxCommand(command) {
+  const boxId =
+    document.getElementById("boxId")?.innerText?.trim();
+
+  if (!boxId || boxId === "-") {
+    alert("No hay caja activa.");
+    return;
+  }
+
+  const payload = {
+    box_id: boxId,
+    command: command,
+    status: "pending"
+  };
+
+  const res = await fetch(
+    SUPABASE_URL + "/rest/v1/box_commands",
+    {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  if (!res.ok) {
+    const txt = await res.text();
+    console.error("ERROR ENVIANDO COMANDO:", txt);
+    alert("Error enviando comando.");
+    return;
+  }
+
+  console.log("COMANDO ENVIADO:", payload);
+  alert("Comando enviado: " + command);
+}
+
   function getWeightLabel(mode) {
     switch (Number(mode)) {
       case 1: return "Peso";
@@ -953,6 +999,8 @@ const btnBackFromAdmin =
   document.getElementById("btnBackFromAdmin");
     const btnBackFromDashboard =
   document.getElementById("btnBackFromDashboard");
+    const btnAdminTare =
+  document.getElementById("btnAdminTare");
   // =========================
   // BOTON RETAIL VIEW
   // Abre la pantalla de compra
@@ -1038,7 +1086,16 @@ if (btnOpenDashboard) {
 
     document.getElementById("title").innerText =
       "LEWMIS Dashboard";
-
+// =========================
+// ADMIN - TARE
+// Prueba inicial de comandos remotos.
+// =========================
+if (btnAdminTare) {
+  btnAdminTare.addEventListener("click", () => {
+    sendBoxCommand("t");
+  });
+}
+    
     // =========================
 // DASHBOARD - VOLVER A ADMIN
 // =========================
