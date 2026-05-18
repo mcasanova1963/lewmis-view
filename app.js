@@ -677,65 +677,11 @@ document.getElementById("weight").innerText =
     document.getElementById("transportDelta").innerText = "-";
   }
 
-  // =========================
-  // TRANSPORTE - EVENTO VISUAL HTML
-  // Creamos una línea de evento dentro
-  // del bloque Transporte sin modificar
-  // el archivo HTML.
-  // =========================
-  let transportEventLine =
-    document.getElementById("transportEventLine");
-
-  if (!transportEventLine) {
-  transportEventLine =
-    document.createElement("div");
-
-  transportEventLine.id =
-    "transportEventLine";
-
-  transportEventLine.className =
-    "row";
-
-  transportEventLine.innerHTML = `
-    <span>${tr("Evento")}:</span>
-    <b id="transportEventValue">-</b>
-  `;
-
-  // =========================
-  // TRANSPORTE - UBICACION EVENTO
-  // Insertar después de Delta,
-  // no dentro del bloque Salida.
-  // =========================
-  transportDeltaBlock.insertAdjacentElement(
-    "afterend",
-    transportEventLine
-  );
-}
-
-  const transportEventValue =
-    document.getElementById("transportEventValue");
-
-  if (transportEventValue) {
-    transportEventValue.innerText =
-      getTransportVisualEvent(box);
-  }
-
-  transportEventLine.style.display =
-    "flex";
-
 } else {
   transportExtra.style.display = "none";
   transportActualBlock.style.display = "none";
   transportDeltaBlock.style.display = "none";
-
-  const transportEventLine =
-    document.getElementById("transportEventLine");
-
-  if (transportEventLine) {
-    transportEventLine.style.display = "none";
-  }
 }
-
 const inventoryExtra = document.getElementById("inventoryExtra");
 
 if (Number(box.mode) === 3) {
@@ -745,16 +691,66 @@ if (Number(box.mode) === 3) {
     formatWeight(box.inventory_base_kg || 0, unit);
 
   document.getElementById("inventoryWeight").innerText =
-  formatWeight(box.weight_kg || 0, unit);
+    formatWeight(box.weight_kg || 0, unit);
 
   document.getElementById("inventoryDelta").innerText =
     formatWeight(box.inventory_delta_kg || 0, unit);
 
-  document.getElementById("inventoryEvent").innerText =
-  tr((box.inventory_event || "-").toString().trim().toUpperCase());
-
 } else {
   inventoryExtra.style.display = "none";
+}
+
+    // =========================
+// EVENTO GENERAL HTML
+// Usa el bloque fijo que ya existe
+// debajo de Estado:
+//
+// labelInventoryEvent / inventoryEvent
+//
+// Modo 2 Transporte:
+// - muestra evento interpretado.
+//
+// Modo 3 Inventario:
+// - muestra evento de inventario.
+//
+// Otros modos:
+// - oculta el campo.
+// =========================
+const eventLabel =
+  document.getElementById("labelInventoryEvent");
+
+const eventValue =
+  document.getElementById("inventoryEvent");
+
+if (eventLabel && eventValue) {
+
+  if (Number(box.mode) === 2) {
+
+    eventLabel.style.display = "block";
+    eventValue.style.display = "block";
+
+    eventLabel.innerText =
+      tr("Evento");
+
+    eventValue.innerText =
+      getTransportVisualEvent(box);
+
+  } else if (Number(box.mode) === 3) {
+
+    eventLabel.style.display = "block";
+    eventValue.style.display = "block";
+
+    eventLabel.innerText =
+      tr("Evento");
+
+    eventValue.innerText =
+      tr((box.inventory_event || "-").toString().trim().toUpperCase());
+
+  } else {
+
+    eventLabel.style.display = "none";
+    eventValue.style.display = "none";
+  }
 }
 
 const amountBlock = document.getElementById("amountBlock");
