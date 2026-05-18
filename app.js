@@ -147,9 +147,8 @@ function getTransportVisualEvent(box) {
   // =========================
   // TRANSPORTE - EVENTO REAL
   // En modo Transporte NO usamos
-  // inventory_event, porque puede traer
-  // valores viejos como RETIRO / ADICION
-  // del modo Inventario.
+  // inventory_event porque puede traer
+  // valores viejos de Inventario.
   // =========================
   const rawEvent =
     String(
@@ -165,6 +164,16 @@ function getTransportVisualEvent(box) {
   const state =
     String(box.state || "").trim().toUpperCase();
 
+  const deltaKg =
+    Number(box.transport_delta_kg || 0);
+
+  const deltaGrams =
+    Math.round((deltaKg * 1000) / 10) * 10;
+
+  // =========================
+  // TRANSPORTE - EVENTO POR ESTADO
+  // Antes de RECIBIDO, usamos el estado.
+  // =========================
   if (state === "FALTANTE" || state === "MISSING") {
     return tr("FALTANTE EN RECEPCIÓN");
   }
@@ -173,9 +182,27 @@ function getTransportVisualEvent(box) {
     return tr("EXCESO EN RECEPCIÓN");
   }
 
+  // =========================
+  // TRANSPORTE - EVENTO AL RECIBIR
+  // Cuando el estado pasa a RECIBIDO,
+  // el estado ya no dice FALTANTE/EXCESO,
+  // pero el delta final todavía permite
+  // interpretar el resultado.
+  // =========================
+  if (state === "RECIBIDO" || state === "RECEIVED") {
+    if (deltaGrams < -10) {
+      return tr("FALTANTE EN RECEPCIÓN");
+    }
+
+    if (deltaGrams > 10) {
+      return tr("EXCESO EN RECEPCIÓN");
+    }
+
+    return "-";
+  }
+
   return "-";
 }
-
 // =========================
 // TRADUCCION WEB
 // Devuelve texto según idioma.
