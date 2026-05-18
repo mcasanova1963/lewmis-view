@@ -172,24 +172,26 @@ function getTransportVisualEvent(box) {
 
   // =========================
   // ANTES DE RECIBIR
-  // Si todavía no se presionó RECIBIR,
-  // el evento debe ser simplemente:
-  // FALTANTE / EXCESO
+  // No mostramos evento.
+  // El estado ya indica FALTANTE / EXCESO.
   // =========================
-  if (state === "FALTANTE" || state === "MISSING") {
-    return tr("FALTANTE");
-  }
-
-  if (state === "EXCESO" || state === "EXCESS") {
-    return tr("EXCESO");
+  if (
+    state === "FALTANTE" ||
+    state === "MISSING" ||
+    state === "EXCESO" ||
+    state === "EXCESS" ||
+    state === "OK" ||
+    state === "ESPERA" ||
+    state === "WAIT" ||
+    state === "ARMED"
+  ) {
+    return "-";
   }
 
   // =========================
   // DESPUES DE RECIBIR
-  // Solo cuando el estado ya es RECIBIDO
-  // interpretamos el delta final como:
-  // FALTANTE EN RECEPCIÓN
-  // EXCESO EN RECEPCIÓN
+  // Solo cuando el estado es RECIBIDO
+  // convertimos el delta final en evento.
   // =========================
   if (state === "RECIBIDO" || state === "RECEIVED") {
     if (deltaGrams < -10) {
@@ -200,7 +202,7 @@ function getTransportVisualEvent(box) {
       return tr("EXCESO EN RECEPCIÓN");
     }
 
-    return "-";
+    return tr("RECEPCIÓN OK");
   }
 
   return "-";
