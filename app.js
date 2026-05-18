@@ -946,8 +946,11 @@ if (sensorEl) {
   // - Dashboard multi-caja
   // =========================
   document.addEventListener("DOMContentLoaded", () => {
-
   const btn = document.getElementById("btnDashboard");
+    const btnOpenDashboard =
+  document.getElementById("btnOpenDashboard");
+const btnBackFromAdmin =
+  document.getElementById("btnBackFromAdmin");
   // =========================
   // BOTON RETAIL VIEW
   // Abre la pantalla de compra
@@ -969,39 +972,62 @@ if (sensorEl) {
 
   if (!btn) return;
 
- btn.addEventListener("click", () => {
+btn.addEventListener("click", () => {
 
   // =========================
   // BOTON ADMINISTRACION
-  // Abre/cierra una pantalla separada
-  // de administración basada en dashboardView.
-  //
-  // No cambia modo.
-  // No toca Android.
-  // No toca firmware.
+  // Desde cualquier modo abre
+  // la pantalla Admin, no el dashboard.
   // =========================
 
-  const singleView =
-    document.getElementById("singleView");
+  dashboardMode = false;
 
-  const dashboardView =
-    document.getElementById("dashboardView");
+  document.getElementById("singleView").style.display =
+    "none";
+
+  document.getElementById("dashboardView").style.display =
+    "none";
 
   const retailView =
     document.getElementById("retailView");
 
-  dashboardMode = !dashboardMode;
+  if (retailView) {
+    retailView.style.display =
+      "none";
+  }
 
-  // =========================
-  // MOSTRAR ADMIN / DASHBOARD
-  // =========================
-  if (dashboardMode) {
+  const adminView =
+    document.getElementById("adminView");
 
-    singleView.style.display =
+  if (adminView) {
+    adminView.style.display =
+      "block";
+  }
+
+  document.getElementById("title").innerText =
+    "LEWMIS Administración";
+
+  btn.style.display =
+    "none";
+  // =========================
+// ADMIN - ABRIR DASHBOARD
+// =========================
+if (btnOpenDashboard) {
+  btnOpenDashboard.addEventListener("click", () => {
+
+    dashboardMode = true;
+
+    document.getElementById("adminView").style.display =
       "none";
 
-    dashboardView.style.display =
+    document.getElementById("singleView").style.display =
+      "none";
+
+    document.getElementById("dashboardView").style.display =
       "block";
+
+    const retailView =
+      document.getElementById("retailView");
 
     if (retailView) {
       retailView.style.display =
@@ -1009,30 +1035,37 @@ if (sensorEl) {
     }
 
     document.getElementById("title").innerText =
-      "LEWMIS Administración";
+      "LEWMIS Dashboard";
+  });
+}
 
-    btn.innerText =
-      "Volver";
+// =========================
+// ADMIN - VOLVER A VISTA NORMAL
+// =========================
+if (btnBackFromAdmin) {
+  btnBackFromAdmin.addEventListener("click", () => {
 
-  } else {
+    dashboardMode = false;
 
-    singleView.style.display =
-      "block";
-
-    dashboardView.style.display =
+    document.getElementById("adminView").style.display =
       "none";
 
-    if (retailView) {
-      retailView.style.display =
-        "none";
-    }
+    document.getElementById("dashboardView").style.display =
+      "none";
+
+    document.getElementById("singleView").style.display =
+      "block";
 
     document.getElementById("title").innerText =
       "LEWMIS";
 
+    btn.style.display =
+      "block";
+
     btn.innerText =
       "Administración";
-  }
+  });
+}
 });
     // =========================
    // RETAIL INTERACTIVO
