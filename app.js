@@ -285,46 +285,90 @@ function setText(id, text) {
 // Android lo lea y lo envíe por Bluetooth
 // al ESP32.
 // =========================
+// =========================
+// ADMIN - ENVIAR COMANDO A SUPABASE
+// Crea un comando pendiente para que
+// Android lo lea y lo envíe por Bluetooth.
+//
+// No usa alert.
+// Devuelve true/false para que el botón
+// pueda mostrar estado visual.
+// =========================
 async function sendBoxCommand(command) {
   const boxId =
     document.getElementById("boxId")?.innerText?.trim();
-
   if (!boxId || boxId === "-") {
-    alert("No hay caja activa.");
-    return;
+    console.error("No hay caja activa.");
+    return false;
   }
-
   const payload = {
     box_id: boxId,
     command: command,
     status: "pending"
   };
+  console.log("ENVIANDO COMANDO ADMIN:", payload);
+  try {
+    const res = await fetch(
+      SUPABASE_URL + "/rest/v1/box_commands",
+      {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_ANON_KEY,
+          "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify(payload)
+      }
+    );
 
-  const res = await fetch(
-    SUPABASE_URL + "/rest/v1/box_commands",
-    {
-      method: "POST",
-      headers: {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-        "Content-Type": "application/json",
-        "Prefer": "return=representation"
-      },
-      body: JSON.stringify(payload)
-    }
-  );
-
-  if (!res.ok) {
     const txt = await res.text();
-    console.error("ERROR ENVIANDO COMANDO:", txt);
-    alert("Error enviando comando.");
-    return;
+
+    console.log("RESPUESTA COMANDO ADMIN:", res.status, txt);
+
+    if (!res.ok) {
+      console.error("Error enviando comando:", txt);
+      return false;
+    }
+
+    return true;
+
+  } catch (err) {
+    console.error("Error de red enviando comando:", err);
+    return false;
+  }
+}
+// =========================
+// ADMIN - BOTON CON ESTADO
+// Cambia temporalmente el texto del botón
+// mientras se envía el comando.
+//
+// Reutilizable para TARE, modo, transporte,
+// inventario, retail, etc.
+// =========================
+async function runAdminButtonCommand(button, command, normalText) {
+  if (!button) return;
+
+  button.disabled = true;
+  button.innerText = "Enviando...";
+
+  const ok =
+    await sendBoxCommand(command);
+
+  if (ok) {
+    button.innerText = "Enviado ✓";
+    button.style.background = "#66bb6a";
+  } else {
+    button.innerText = "Error";
+    button.style.background = "#ef5350";
   }
 
-  console.log("COMANDO ENVIADO:", payload);
-  alert("Comando enviado: " + command);
+  setTimeout(() => {
+    button.disabled = false;
+    button.innerText = normalText;
+    button.style.background = "#4fc3f7";
+  }, 1500);
 }
-
   function getWeightLabel(mode) {
     switch (Number(mode)) {
       case 1: return "Peso";
@@ -1093,7 +1137,11 @@ if (btnOpenDashboard) {
 // =========================
 if (btnAdminTare) {
   btnAdminTare.addEventListener("click", () => {
-    sendBoxCommand("t");
+    runAdminButtonCommand(
+      btnAdminTare,
+      "t",
+      "TARE"
+    );
   });
 }
     
