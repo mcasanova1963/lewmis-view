@@ -803,6 +803,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAdminTare =
     document.getElementById("btnAdminTare");
 
+  const btnAdminMode1 =
+  document.getElementById("btnAdminMode1");
+
+const btnAdminMode2 =
+  document.getElementById("btnAdminMode2");
+
+const btnAdminMode3 =
+  document.getElementById("btnAdminMode3");
+
+const btnAdminMode4 =
+  document.getElementById("btnAdminMode4");
+
   const btnRetailView =
     document.getElementById("btnRetailView");
 
