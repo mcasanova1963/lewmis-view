@@ -1,60 +1,24 @@
 const SUPABASE_URL = "https://unpxicyojsymrjyyjidj.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVucHhpY3lvanN5bXJqeXlqaWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwNjAwMDIsImV4cCI6MjA5MjYzNjAwMn0.hKY-YWk7FxZ_YGWL5zSlG1Ube8PcU8FXXx4Xbzgv4Lc";
+
 console.log("APP.JS LEWMIS CARGADO");
+
 // =========================
-// IDIOMA WEB
-// Por ahora manual porque Supabase aún no tiene campo lang.
-// Cambiar a "EN" para inglés o "ES" para español.
+// ESTADO GLOBAL WEB
 // =========================
 let currentLang = "EN";
-// =========================
-// DASHBOARD MULTI-CAJA
-// Controla si estamos viendo:
-//
-// false = vista individual
-// true  = dashboard multi-caja
-// =========================
 let dashboardMode = false;
+let currentScreen = "single"; // single | admin | dashboard | retail
+
 // =========================
 // RETAIL INTERACTIVO
-// Carrito temporal multi-caja.
-//
-// retailCart:
-// lista de productos agregados.
-//
-// processedRetailEvents:
-// evita agregar el mismo evento
-// varias veces.
-// =========================
-// =========================
-// RETAIL INTERACTIVO
-// Estado limpio por caja.
-//
-// Controla que cada caja agregue
-// solo una compra por ciclo:
-//
-// LISTO/IDLE/EMPTY -> armada
-// A PAGAR          -> agrega una vez
 // =========================
 let retailCart = [];
 let processedRetailEvents = new Set();
-// =========================
-// RETAIL INTERACTIVO
-// Control de ciclo por caja.
-//
-// Evita agregar varias veces
-// la misma compra.
-// =========================
 let retailBoxCycle = {};
+
 // =========================
 // RETAIL - PESO REFERENCIAL
-// Tabla local de pesos promedio
-// por unidad de producto.
-// Sirve para filtrar compras falsas
-// causadas por ruido o micro-saltos.
-//
-// avg_g = peso promedio por unidad en gramos
-// min_factor = fracción mínima aceptable
 // =========================
 const productWeightReference = {
   "tomate":  { avg_g: 120, min_factor: 0.30 },
@@ -93,23 +57,17 @@ const productWeightReference = {
   "uvas": { avg_g: 5, min_factor: 1.00 }
 };
 
+// =========================
+// HELPERS
+// =========================
+function formatMoney(value) {
+  const n = Number(value || 0);
+  return "$ " + n.toLocaleString("es-CO") + ",00";
+}
 
-  function formatMoney(value) {
-    const n = Number(value || 0);
-    return "$ " + n.toLocaleString("es-CO") + ",00";
-  }
+function formatWeight(kg, unit) {
+  const rawKg = Number(kg || 0);
 
-  function formatWeight(kg, unit) {
-  const rawKg =
-    Number(kg || 0);
-
-  // =========================
-  // HTML - PESO VISUAL ESTABLE
-  // Redondeo visual a pasos de 10 g.
-  // No cambia Supabase.
-  // No cambia carrito.
-  // No cambia cálculos internos.
-  // =========================
   const roundedKg =
     Math.round((rawKg * 1000) / 10) * 10 / 1000;
 
@@ -124,93 +82,12 @@ const productWeightReference = {
 
   return roundedKg.toFixed(2) + " kg";
 }
-// =========================
-// TRANSPORTE - EVENTO VISUAL HTML
-// El firmware puede enviar EVENTO="-"
-// aunque el estado final sea FALTANTE
-// o EXCESO.
-//
-// Para el dashboard remoto mostramos
-// un evento interpretado más claro.
-// No cambia firmware.
-// No cambia Supabase.
-// Solo mejora la lectura visual.
-// =========================
-function getTransportVisualEvent(box) {
-  const mode =
-    Number(box.mode || 0);
 
-  if (mode !== 2) {
-    return box.event || box.inventory_event || "-";
-  }
-
-  // =========================
-  // TRANSPORTE - EVENTO REAL
-  // En modo Transporte NO usamos
-  // inventory_event porque puede traer
-  // valores viejos de Inventario.
-  // =========================
-  const rawEvent =
-    String(
-      box.transport_event ||
-      box.event ||
-      "-"
-    ).trim();
-
-  if (rawEvent !== "-" && rawEvent !== "") {
-    return tr(rawEvent.toUpperCase());
-  }
-
-  const state =
-    String(box.state || "").trim().toUpperCase();
-
-  const deltaKg =
-    Number(box.transport_delta_kg || 0);
-
-  const deltaGrams =
-    Math.round((deltaKg * 1000) / 10) * 10;
-
-  // =========================
-  // ANTES DE RECIBIR
-  // No mostramos evento.
-  // El estado ya indica FALTANTE / EXCESO.
-  // =========================
-  if (
-    state === "FALTANTE" ||
-    state === "MISSING" ||
-    state === "EXCESO" ||
-    state === "EXCESS" ||
-    state === "OK" ||
-    state === "ESPERA" ||
-    state === "WAIT" ||
-    state === "ARMED"
-  ) {
-    return "-";
-  }
-
-  // =========================
-  // DESPUES DE RECIBIR
-  // Solo cuando el estado es RECIBIDO
-  // convertimos el delta final en evento.
-  // =========================
-  if (state === "RECIBIDO" || state === "RECEIVED") {
-    if (deltaGrams < -10) {
-      return tr("FALTANTE EN RECEPCIÓN");
-    }
-
-    if (deltaGrams > 10) {
-      return tr("EXCESO EN RECEPCIÓN");
-    }
-
-    return tr("RECEPCIÓN OK");
-  }
-
-  return "-";
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = text;
 }
-// =========================
-// TRADUCCION WEB
-// Devuelve texto según idioma.
-// =========================
+
 function tr(key) {
   const en = currentLang === "EN";
 
@@ -234,10 +111,8 @@ function tr(key) {
     "LISTO": en ? "READY" : "LISTO",
 
     "Meta": en ? "Target" : "Meta",
-
     "Base": en ? "Base" : "Base",
     "Delta": "Delta",
-
     "Estado": en ? "Status" : "Estado",
 
     "ESPERA": en ? "WAIT" : "ESPERA",
@@ -248,6 +123,7 @@ function tr(key) {
     "VACIA": en ? "EMPTY" : "VACIA",
     "IDLE": en ? "WAIT" : "ESPERA",
     "SIN_BASE": en ? "NO_BASE" : "SIN_BASE",
+
     "RECEPCIÓN OK": en ? "RECEIPT OK" : "RECEPCIÓN OK",
     "Evento": en ? "Event" : "Evento",
     "RETIRO": en ? "REMOVED" : "RETIRO",
@@ -262,7 +138,7 @@ function tr(key) {
     "Sensor": en ? "Sensor" : "Sensor",
     "Caja": en ? "Box" : "Caja",
     "Batería": en ? "Battery" : "Batería",
-      
+
     "META": en ? "TARGET" : "META",
     "CARGANDO": en ? "LOADING" : "CARGANDO",
 
@@ -274,39 +150,105 @@ function tr(key) {
   return map[key] || key;
 }
 
-function setText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.innerText = text;
+function getWeightLabel(mode) {
+  switch (Number(mode)) {
+    case 1: return "Peso";
+    case 2: return "Actual";
+    case 3: return "Peso";
+    case 4: return "Llevas";
+    default: return "Peso";
+  }
+}
+
+function getModeLabel(mode) {
+  switch (Number(mode)) {
+    case 1: return "Campo";
+    case 2: return "Transporte";
+    case 3: return "Inventario";
+    case 4: return "Retail";
+    default: return "-";
+  }
+}
+
+// =========================
+// TRANSPORTE - EVENTO VISUAL HTML
+// =========================
+function getTransportVisualEvent(box) {
+  const mode =
+    Number(box.mode || 0);
+
+  if (mode !== 2) {
+    return box.event || box.inventory_event || "-";
+  }
+
+  const rawEvent =
+    String(
+      box.transport_event ||
+      box.event ||
+      "-"
+    ).trim();
+
+  if (rawEvent !== "-" && rawEvent !== "") {
+    return tr(rawEvent.toUpperCase());
+  }
+
+  const state =
+    String(box.state || "").trim().toUpperCase();
+
+  const deltaKg =
+    Number(box.transport_delta_kg || 0);
+
+  const deltaGrams =
+    Math.round((deltaKg * 1000) / 10) * 10;
+
+  if (
+    state === "FALTANTE" ||
+    state === "MISSING" ||
+    state === "EXCESO" ||
+    state === "EXCESS" ||
+    state === "OK" ||
+    state === "ESPERA" ||
+    state === "WAIT" ||
+    state === "ARMED"
+  ) {
+    return "-";
+  }
+
+  if (state === "RECIBIDO" || state === "RECEIVED") {
+    if (deltaGrams < -10) {
+      return tr("FALTANTE EN RECEPCIÓN");
+    }
+
+    if (deltaGrams > 10) {
+      return tr("EXCESO EN RECEPCIÓN");
+    }
+
+    return tr("RECEPCIÓN OK");
+  }
+
+  return "-";
 }
 
 // =========================
 // ADMIN - ENVIAR COMANDO A SUPABASE
-// Crea un comando pendiente para que
-// Android lo lea y lo envíe por Bluetooth
-// al ESP32.
-// =========================
-// =========================
-// ADMIN - ENVIAR COMANDO A SUPABASE
-// Crea un comando pendiente para que
-// Android lo lea y lo envíe por Bluetooth.
-//
-// No usa alert.
-// Devuelve true/false para que el botón
-// pueda mostrar estado visual.
 // =========================
 async function sendBoxCommand(command) {
   const boxId =
     document.getElementById("boxId")?.innerText?.trim();
+
   if (!boxId || boxId === "-") {
     console.error("No hay caja activa.");
     return false;
   }
+
   const payload = {
     box_id: boxId,
     command: command,
     status: "pending"
   };
+
   console.log("ENVIANDO COMANDO ADMIN:", payload);
+
   try {
     const res = await fetch(
       SUPABASE_URL + "/rest/v1/box_commands",
@@ -338,16 +280,15 @@ async function sendBoxCommand(command) {
     return false;
   }
 }
+
 // =========================
 // ADMIN - BOTON CON ESTADO
-// Cambia temporalmente el texto del botón
-// mientras se envía el comando.
-//
-// Reutilizable para TARE, modo, transporte,
-// inventario, retail, etc.
 // =========================
 async function runAdminButtonCommand(button, command, normalText) {
   if (!button) return;
+
+  const originalBackground =
+    button.style.background || "#4fc3f7";
 
   button.disabled = true;
   button.innerText = "Enviando...";
@@ -366,670 +307,487 @@ async function runAdminButtonCommand(button, command, normalText) {
   setTimeout(() => {
     button.disabled = false;
     button.innerText = normalText;
-    button.style.background = "#4fc3f7";
+    button.style.background = originalBackground;
   }, 1500);
 }
-  function getWeightLabel(mode) {
-    switch (Number(mode)) {
-      case 1: return "Peso";
-      case 2: return "Actual";
-      case 3: return "Peso";
-      case 4: return "Llevas";
-      default: return "Peso";
+
+// =========================
+// CARGA DESDE SUPABASE
+// =========================
+async function loadBoxStatus() {
+  const url = dashboardMode
+    ? SUPABASE_URL +
+      "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=50"
+    : SUPABASE_URL +
+      "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=1";
+
+  const res = await fetch(url, {
+    headers: {
+      "apikey": SUPABASE_ANON_KEY,
+      "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
     }
-  }
+  });
 
-  function getModeLabel(mode) {
-    switch (Number(mode)) {
-      case 1: return "Campo";
-      case 2: return "Transporte";
-      case 3: return "Inventario";
-      case 4: return "Retail";
-      default: return "-";
-    }
-  }
+  const data = await res.json();
 
-  async function loadBoxStatus() {
-   // =========================
-   // DASHBOARD MULTI-CAJA
-   // Si estamos en dashboard:
-   //
-   // - leer varias cajas
-   //
-   // Si estamos en vista individual:
-   //
-   // - leer solo la más reciente
-   // =========================
-   const url = dashboardMode
-
-  ? SUPABASE_URL +
-    "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=50"
-
-  : SUPABASE_URL +
-    "/rest/v1/box_status?select=%2A&order=updated_at.desc&limit=1";
-
-    const res = await fetch(url, {
-      headers: {
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-      }
-    });
-
-    const data = await res.json();
-
-    // =========================
-    // DASHBOARD MULTI-CAJA
-    // Si estamos en modo dashboard,
-    // mandamos todas las filas a la tabla
-    // y detenemos aquí la vista individual.
-    // =========================
-    if (dashboardMode) {
+  if (dashboardMode) {
     renderDashboard(data);
     return;
-    }
-  
-    if (!data || data.length === 0) {
-      document.getElementById("state").innerText = "SIN DATOS";
-      return;
-    }
-    console.log("SUPABASE DATA:", data);
-      
-    const box = data[0];
+  }
 
-    // =========================
-    // RETAIL INTERACTIVO
-    // Muestra el botón "Ver compra"
-    // solo cuando la caja actual
-    // está en modo Retail.
-    // =========================
-    const btnRetailView = document.getElementById("btnRetailView");
+  if (!data || data.length === 0) {
+    setText("state", "SIN DATOS");
+    return;
+  }
 
-    if (btnRetailView) {
+  const box = data[0];
+
+  console.log("SUPABASE DATA:", data);
+
+  const unit =
+    (box.unit || "kg").toLowerCase();
+
+  currentLang =
+    (box.lang || "ES").toString().trim().toUpperCase();
+
+  // =========================
+  // RETAIL INTERACTIVO
+  // =========================
+  const btnRetailView =
+    document.getElementById("btnRetailView");
+
+  if (btnRetailView) {
     btnRetailView.style.display =
-    Number(box.mode) === 4 ? "block" : "none";
-    }
-
-    // =========================
-    // RETAIL INTERACTIVO
-    // Detecta eventos de compra.
-    //
-    // Cuando una caja Retail entra en:
-    // PAGAR AHORA / A PAGAR / TO PAY
-    //
-    // se agrega automáticamente
-    // al carrito multi-caja.
-    // =========================
-    const retailState =
-  (box.state || "")
-    .toString()
-    .trim()
-    .toUpperCase();
-
-
-// =========================
-// RETAIL - FILTRO DINAMICO
-// Calcula peso mínimo válido
-// según el producto.
-// =========================
-const productKey =
-  (box.product || "")
-    .toString()
-    .trim()
-    .toLowerCase();
-
-const productRef =
-  productWeightReference[productKey];
-
-// valor por defecto:
-// 30 gramos
-let minRetailKg = 0.03;
-
-// si existe referencia,
-// usamos cálculo dinámico
-if (productRef) {
-
-  minRetailKg =
-    (
-      productRef.avg_g *
-      productRef.min_factor
-    ) / 1000;
-
-}
-
-// =========================
-// RETAIL INTERACTIVO
-// CAPTURA AUTOMATICA LIMPIA
-//
-// Regla:
-// - No capturar PESANDO.
-// - Capturar solo al entrar en A PAGAR.
-// - Capturar una sola vez por ciclo.
-// - Rearmar solo cuando vuelve a LISTO/IDLE/EMPTY
-//   o cuando peso/monto caen casi a cero.
-// =========================
-const boxKey =
-  box.box_id || "UNKNOWN_BOX";
-
-const currentWeight =
-  Number(box.weight_kg || 0);
-
-const currentAmount =
-  Number(box.amount_to_pay || 0);
-
-const rawRetailState =
-  (box.state || "")
-    .toString()
-    .trim()
-    .toUpperCase();
-
-if (!retailBoxCycle[boxKey]) {
-  retailBoxCycle[boxKey] = {
-    armed: false,
-    added: false,
-    lastState: ""
-  };
-}
-
-const cycle =
-  retailBoxCycle[boxKey];
-
-// =========================
-// RESET / REARMADO
-// La caja queda lista para una nueva compra
-// solo cuando vuelve a estado de reposo
-// o cuando el monto/peso cae casi a cero.
-// =========================
-const isResetState =
-  rawRetailState === "LISTO" ||
-  rawRetailState === "IDLE" ||
-  rawRetailState === "EMPTY" ||
-  rawRetailState === "SIN CARGA" ||
-  rawRetailState === "SIN_CARGA";
-
-const isNearZero =
-  currentAmount <= 2 ||
-  currentWeight < minRetailKg;
-
-if (
-  Number(box.mode) === 4 &&
-  (
-    isResetState ||
-    isNearZero
-  )
-) {
-  cycle.armed = true;
-  cycle.added = false;
-}
-
-// =========================
-// EVENTO REAL DE COMPRA
-// Solo cuando entra en A PAGAR.
-// No en PESANDO.
-// No por monto > 0.
-// =========================
-const isPayState =
-  rawRetailState === "A PAGAR" ||
-  rawRetailState === "TO PAY";
-
-const enteredPayState =
-  isPayState &&
-  cycle.lastState !== rawRetailState;
-
-if (
-  Number(box.mode) === 4 &&
-  cycle.armed === true &&
-  cycle.added === false &&
-  enteredPayState &&
-  currentAmount > 0 &&
-  currentWeight >= minRetailKg
-) {
-
-  addRetailCartItem(box);
-
-  cycle.added = true;
-  cycle.armed = false;
-
-  console.log(
-    "RETAIL AGREGADO POR EVENTO A PAGAR:",
-    box
-  );
-}
-
-// =========================
-// Guardar último estado visto
-// para detectar transición.
-// =========================
-cycle.lastState =
-  rawRetailState;
-    
-      const demoSensor = box.demo_sensor || "OFF";
-      const demoValue = box.demo_sensor_value || "-";
-    
-      const unit = (box.unit || "kg").toLowerCase();
-      // =========================
-      // WEB - IDIOMA DESDE SUPABASE
-      // Lee ES/EN enviado por Android.
-      // =========================
-      currentLang = (box.lang || "ES").toString().trim().toUpperCase();
-      // =========================
-      // WEB - ETIQUETAS FIJAS TRADUCIDAS
-      // Traduce textos que vienen escritos en index.html.
-      // =========================
-      // =========================
- // WEB - HELPER SEGURO PARA TEXTOS
- // Evita que la página se rompa si falta un id en index.html.
- // =========================
-
- // =========================
- // WEB - ETIQUETAS FIJAS TRADUCIDAS
- // Traduce textos escritos en index.html.
- // =========================
- setText("labelProduct", tr("Producto"));
- setText("labelPrice", tr("Precio"));
- setText("labelTransportBase", tr("Salida"));
- setText("labelTransportDelta", tr("Delta"));
- setText("labelFieldTarget", tr("Meta"));
- setText("labelInventoryBase", tr("Base"));
- setText("labelInventoryWeight", tr("Peso"));
- setText("labelTransportActual", tr("Actual"));
- setText("labelInventoryDelta", tr("Delta"));
- setText("labelState", tr("Estado"));
- setText("labelSensor", tr("Sensor"));
- setText("labelBox", tr("Caja"));
- setText("labelSerial", "SN");
- document.getElementById("serialNumber").innerText =
-  box.serial_number || "-";
- setText("labelBattery", tr("Batería"));
- setText("labelInventoryEvent", tr("Evento"));
-// =========================
-// DASHBOARD - ENCABEZADOS
-// Traducción de columnas
-// multi-caja.
-// =========================
-setText("thBox", tr("Caja"));
-setText("thProduct", tr("Producto"));
-setText("thMode", tr("Modo"));
-setText("thWeight", tr("Peso"));
-setText("thState", tr("Estado"));
-setText("thBattery", tr("Batería"));
-
-    console.log("UNIT FROM DB:", box.unit);
-
-   // =========================
-   // TITULO WEB - MODO TRADUCIDO
-   // Traduce Campo / Transporte / Inventario / Retail.
-   // =========================
-    // =========================
-   // TITULO PRINCIPAL
-   // Dashboard multi-caja usa
-   // un título general.
-   // Vista individual usa modo.
-   // =========================
-   document.getElementById("title").innerText =
-  dashboardMode
-    ? "LEWMIS Dashboard"
-    : "LEWMIS - " + tr(getModeLabel(box.mode));
-    document.getElementById("product").innerText = box.product || "-";
-    // =========================
-    // WEB - BOX ID
-    // Muestra el identificador único de la caja.
-    // =========================
-    document.getElementById("boxId").innerText = box.box_id || "-";
-    
-
-    document.getElementById("price").innerText =
-    box.price_per_kg ? formatMoney(box.price_per_kg) + " / " + unit : "-";
-
-// =========================
-// HTML - PESO PRINCIPAL
-// En Retail, weight_kg representa
-// lo que el cliente lleva.
-// =========================
-// =========================
-// HTML - PESO PRINCIPAL / LLEVAS
-// En Retail usamos el valor visual
-// enviado desde firmware vía Android,
-// igual al mostrado en TFT.
-//
-// Si no existe, usamos weight_kg
-// como respaldo.
-// =========================
-const weightForDisplay =
-  Number(box.mode) === 4
-    ? (box.retail_llevas_visual_kg ?? box.weight_kg)
-    : box.weight_kg;
-
-const formattedWeight =
-  formatWeight(weightForDisplay, unit);
-
-console.log("FORMATTED WEIGHT:", formattedWeight);
-
-// =========================
-// HTML - PESO PRINCIPAL
-// En Retail, weight_kg representa
-// "Llevas", es decir, el peso retirado
-// por el cliente.
-//
-// Debe mostrarse todo el tiempo,
-// no solo cuando aparece A PAGAR.
-// =========================
-document.getElementById("weight").innerText =
-  formattedWeight;
-
-    // =========================
-    // ETIQUETA PRINCIPAL DE PESO
-    // Traduce Peso / Actual / Llevas según idioma web.
-    // =========================
-    document.getElementById("weightLabel").innerText =tr(getWeightLabel(box.mode));
-    
-
-    const fieldExtra = document.getElementById("fieldExtra");
-    const weightBlock = document.getElementById("weightBlock");
-    
-    if (
-    Number(box.mode) === 1 ||
-    Number(box.mode) === 4
-    ) {
-    weightBlock.style.display = "block";
-    } else {
-    weightBlock.style.display = "none";
-    }
-    
-
-    const transportExtra = document.getElementById("transportExtra");
-    const transportActualBlock = document.getElementById("transportActualBlock");
-    const transportDeltaBlock = document.getElementById("transportDeltaBlock");
-    
-    let transportStateVisual = (box.state || "-").toString().trim().toUpperCase();
-
-   if (transportStateVisual === "IDLE") {
-   transportStateVisual = "ESPERA";
-   }
-
-  if (Number(box.mode) === 2) {
-  transportExtra.style.display = "block";
-  transportActualBlock.style.display = "block";
-  transportDeltaBlock.style.display = "block";
-
-  document.getElementById("transportBase").innerText =
-    formatWeight(box.transport_base_kg || 0, unit);
-
-  document.getElementById("transportActual").innerText =
-    formatWeight(box.transport_actual_kg ?? box.weight_kg ?? 0, unit);
-
-  const transportState =
-    (box.state || "").toString().trim().toUpperCase();
-
-  const deltaKg =
-    Number(box.transport_delta_kg || 0);
-
-  const deltaGrams =
-    Math.round((deltaKg * 1000) / 10) * 10;
-
-  if (transportState === "IDLE") {
-    transportStateVisual = "ESPERA";
+      Number(box.mode) === 4 && currentScreen === "single"
+        ? "block"
+        : "none";
   }
 
-  if (
-    transportState === "OK" ||
-    transportState === "FALTANTE" ||
-    transportState === "EXCESO" ||
-    transportState === "RECIBIDO" ||
-    transportState === "VACIA"
-  ) {
-    if (unit === "kg" && Math.abs(deltaKg) < 1) {
-      document.getElementById("transportDelta").innerText =
-        deltaGrams + " g";
-    } else {
-      document.getElementById("transportDelta").innerText =
-        formatWeight(deltaKg, unit);
-    }
+  const productKey =
+    (box.product || "")
+      .toString()
+      .trim()
+      .toLowerCase();
 
-    if (transportState !== "RECIBIDO") {
-      if (Math.abs(deltaGrams) <= 10) {
-        transportStateVisual = "OK";
-      } else if (deltaGrams < 0) {
-        transportStateVisual = "FALTANTE";
-      } else {
-        transportStateVisual = "EXCESO";
-      }
-    }
-  } else {
-    document.getElementById("transportDelta").innerText = "-";
+  const productRef =
+    productWeightReference[productKey];
+
+  let minRetailKg = 0.03;
+
+  if (productRef) {
+    minRetailKg =
+      (productRef.avg_g * productRef.min_factor) / 1000;
   }
 
-} else {
-  transportExtra.style.display = "none";
-  transportActualBlock.style.display = "none";
-  transportDeltaBlock.style.display = "none";
-}
-const inventoryExtra = document.getElementById("inventoryExtra");
+  const boxKey =
+    box.box_id || "UNKNOWN_BOX";
 
-if (Number(box.mode) === 3) {
-  inventoryExtra.style.display = "block";
+  const currentWeight =
+    Number(box.weight_kg || 0);
 
-  document.getElementById("inventoryBase").innerText =
-    formatWeight(box.inventory_base_kg || 0, unit);
+  const currentAmount =
+    Number(box.amount_to_pay || 0);
 
-  document.getElementById("inventoryWeight").innerText =
-    formatWeight(box.weight_kg || 0, unit);
+  const rawRetailState =
+    (box.state || "")
+      .toString()
+      .trim()
+      .toUpperCase();
 
-  document.getElementById("inventoryDelta").innerText =
-    formatWeight(box.inventory_delta_kg || 0, unit);
-
-} else {
-  inventoryExtra.style.display = "none";
-}
-
-    // =========================
-// EVENTO GENERAL HTML
-// Usa el bloque fijo que ya existe
-// debajo de Estado:
-//
-// labelInventoryEvent / inventoryEvent
-//
-// Modo 2 Transporte:
-// - muestra evento interpretado.
-//
-// Modo 3 Inventario:
-// - muestra evento de inventario.
-//
-// Otros modos:
-// - oculta el campo.
-// =========================
-const eventLabel =
-  document.getElementById("labelInventoryEvent");
-
-const eventValue =
-  document.getElementById("inventoryEvent");
-
-if (eventLabel && eventValue) {
-
-  if (Number(box.mode) === 2) {
-
-    eventLabel.style.display = "block";
-    eventValue.style.display = "block";
-
-    eventLabel.innerText =
-      tr("Evento");
-
-    eventValue.innerText =
-      getTransportVisualEvent(box);
-
-  } else if (Number(box.mode) === 3) {
-
-    eventLabel.style.display = "block";
-    eventValue.style.display = "block";
-
-    eventLabel.innerText =
-      tr("Evento");
-
-    eventValue.innerText =
-      tr((box.inventory_event || "-").toString().trim().toUpperCase());
-
-  } else {
-
-    eventLabel.style.display = "none";
-    eventValue.style.display = "none";
+  if (!retailBoxCycle[boxKey]) {
+    retailBoxCycle[boxKey] = {
+      armed: false,
+      added: false,
+      lastState: ""
+    };
   }
-}
 
-const amountBlock = document.getElementById("amountBlock");
-const amountLabel = document.getElementById("amountLabel");
+  const cycle =
+    retailBoxCycle[boxKey];
 
-if (Number(box.mode) === 1) {
+  const isResetState =
+    rawRetailState === "LISTO" ||
+    rawRetailState === "IDLE" ||
+    rawRetailState === "EMPTY" ||
+    rawRetailState === "SIN CARGA" ||
+    rawRetailState === "SIN_CARGA";
 
-  amountBlock.style.display = "block";
-  amountLabel.innerText = tr("Valor");
-  document.getElementById("amount").innerText = formatMoney(box.amount_to_pay);
-
-  // =========================
-  // CAMPO - MOSTRAR META
-  // =========================
-  fieldExtra.style.display = "block";
-
-  document.getElementById("fieldTarget").innerText =
-    formatWeight(box.target_kg || 0, unit);
-
-} else if (Number(box.mode) === 4) {
-
-  // =========================
-  // RETAIL - A PAGAR
-  // amount_to_pay viene de Supabase
-  // y representa la compra confirmada.
-  // =========================
-  amountBlock.style.display = "block";
-amountLabel.innerText = tr("A pagar");
-
-// =========================
-// RETAIL - A PAGAR VISUAL HTML
-// Calculamos A PAGAR usando el mismo
-// peso visual que mostramos en Llevas.
-//
-// Esto alinea:
-// Llevas visual
-// A pagar
-// Carrito
-// =========================
-const retailLlevasVisualKg =
-  Number(
-    box.retail_llevas_visual_kg ??
-    box.weight_kg ??
-    0
-  );
-
-const retailPrice =
-  Number(box.price_per_kg || 0);
-
-const amountVisual =
-  retailLlevasVisualKg * retailPrice;
-
-document.getElementById("amount").innerText =
-  formatMoney(amountVisual);
-
-  // =========================
-  // RETAIL - EN CAJA
-  // Muestra el peso vivo disponible
-  // físicamente en la caja.
-  //
-  // Fuente correcta:
-  // retail_queda_kg
-  //
-  // NO usar aquí:
-  // retail_base_kg = base técnica
-  // weight_kg = lo que el cliente lleva
-  // =========================
-  fieldExtra.style.display = "block";
-
-  document.getElementById("labelFieldTarget").innerText =
-    tr("En caja");
-
-  // =========================
-// RETAIL - EN CAJA HTML
-// Usamos el valor visual del firmware,
-// igual al mostrado en TFT y Android.
-//
-// Si no existe, usamos retail_queda_kg
-// como respaldo.
-// =========================
-const retailQuedaKg =
-  Number(
-    box.retail_queda_visual_kg ??
-    box.retail_queda_kg ??
-    0
-  );
-
-document.getElementById("fieldTarget").innerText =
-  formatWeight(retailQuedaKg, unit);
-
-} else {
-
-  amountBlock.style.display = "none";
-  fieldExtra.style.display = "none";
-}
-  // =========================
-  // WEB - ESTADO VISUAL
-  // Calcula siempre un estado visible.
-  // Traduce solo después de tener un valor seguro.
-  // =========================
-  const rawState = (box.state || "-").toString().trim().toUpperCase();
-
-let stateVisual = "-";
-if (Number(box.mode) === 2) {
-  stateVisual = transportStateVisual || "-";
-
-} else if (rawState === "IDLE") {
-
-  stateVisual = "ESPERA";
-
-} else {
-
-  stateVisual = rawState;
-}
-
-const stateEl = document.getElementById("state");
-
-if (stateEl) {
-  stateEl.classList.remove("pay-alert");
+  const isNearZero =
+    currentAmount <= 2 ||
+    currentWeight < minRetailKg;
 
   if (
     Number(box.mode) === 4 &&
     (
-      stateVisual === "A PAGAR" ||
-      stateVisual === "TO PAY"
+      isResetState ||
+      isNearZero
     )
   ) {
-    stateEl.innerText = tr("AGREGADO_COMPRA");
-    stateEl.classList.add("pay-alert");
-  } else {
-    stateEl.innerText = tr(stateVisual);
+    cycle.armed = true;
+    cycle.added = false;
   }
+
+  const isPayState =
+    rawRetailState === "A PAGAR" ||
+    rawRetailState === "TO PAY";
+
+  const enteredPayState =
+    isPayState &&
+    cycle.lastState !== rawRetailState;
+
+  if (
+    Number(box.mode) === 4 &&
+    cycle.armed === true &&
+    cycle.added === false &&
+    enteredPayState &&
+    currentAmount > 0 &&
+    currentWeight >= minRetailKg
+  ) {
+    addRetailCartItem(box);
+
+    cycle.added = true;
+    cycle.armed = false;
+
+    console.log("RETAIL AGREGADO POR EVENTO A PAGAR:", box);
+  }
+
+  cycle.lastState =
+    rawRetailState;
+
+  const demoSensor =
+    box.demo_sensor || "OFF";
+
+  const demoValue =
+    box.demo_sensor_value || "-";
+
+  // =========================
+  // ETIQUETAS
+  // =========================
+  setText("labelProduct", tr("Producto"));
+  setText("labelPrice", tr("Precio"));
+  setText("labelTransportBase", tr("Salida"));
+  setText("labelTransportDelta", tr("Delta"));
+  setText("labelFieldTarget", tr("Meta"));
+  setText("labelInventoryBase", tr("Base"));
+  setText("labelInventoryWeight", tr("Peso"));
+  setText("labelTransportActual", tr("Actual"));
+  setText("labelInventoryDelta", tr("Delta"));
+  setText("labelState", tr("Estado"));
+  setText("labelSensor", tr("Sensor"));
+  setText("labelBox", tr("Caja"));
+  setText("labelSerial", "SN");
+  setText("labelBattery", tr("Batería"));
+  setText("labelInventoryEvent", tr("Evento"));
+
+  setText("thBox", tr("Caja"));
+  setText("thProduct", tr("Producto"));
+  setText("thMode", tr("Modo"));
+  setText("thWeight", tr("Peso"));
+  setText("thState", tr("Estado"));
+  setText("thBattery", tr("Batería"));
+
+  setText("serialNumber", box.serial_number || "-");
+
+  if (currentScreen === "single") {
+    setText(
+      "title",
+      "LEWMIS - " + tr(getModeLabel(box.mode))
+    );
+  }
+
+  setText("product", box.product || "-");
+  setText("boxId", box.box_id || "-");
+
+  setText(
+    "price",
+    box.price_per_kg
+      ? formatMoney(box.price_per_kg) + " / " + unit
+      : "-"
+  );
+
+  // =========================
+  // PESO PRINCIPAL
+  // =========================
+  const weightForDisplay =
+    Number(box.mode) === 4
+      ? (box.retail_llevas_visual_kg ?? box.weight_kg)
+      : box.weight_kg;
+
+  const formattedWeight =
+    formatWeight(weightForDisplay, unit);
+
+  setText("weight", formattedWeight);
+  setText("weightLabel", tr(getWeightLabel(box.mode)));
+
+  const fieldExtra =
+    document.getElementById("fieldExtra");
+
+  const weightBlock =
+    document.getElementById("weightBlock");
+
+  if (weightBlock) {
+    weightBlock.style.display =
+      Number(box.mode) === 1 || Number(box.mode) === 4
+        ? "block"
+        : "none";
+  }
+
+  // =========================
+  // TRANSPORTE
+  // =========================
+  const transportExtra =
+    document.getElementById("transportExtra");
+
+  const transportActualBlock =
+    document.getElementById("transportActualBlock");
+
+  const transportDeltaBlock =
+    document.getElementById("transportDeltaBlock");
+
+  let transportStateVisual =
+    (box.state || "-").toString().trim().toUpperCase();
+
+  if (transportStateVisual === "IDLE") {
+    transportStateVisual = "ESPERA";
+  }
+
+  if (Number(box.mode) === 2) {
+    transportExtra.style.display = "block";
+    transportActualBlock.style.display = "block";
+    transportDeltaBlock.style.display = "block";
+
+    setText(
+      "transportBase",
+      formatWeight(box.transport_base_kg || 0, unit)
+    );
+
+    setText(
+      "transportActual",
+      formatWeight(box.transport_actual_kg ?? box.weight_kg ?? 0, unit)
+    );
+
+    const transportState =
+      (box.state || "").toString().trim().toUpperCase();
+
+    const deltaKg =
+      Number(box.transport_delta_kg || 0);
+
+    const deltaGrams =
+      Math.round((deltaKg * 1000) / 10) * 10;
+
+    if (
+      transportState === "OK" ||
+      transportState === "FALTANTE" ||
+      transportState === "EXCESO" ||
+      transportState === "RECIBIDO" ||
+      transportState === "VACIA"
+    ) {
+      if (unit === "kg" && Math.abs(deltaKg) < 1) {
+        setText("transportDelta", deltaGrams + " g");
+      } else {
+        setText("transportDelta", formatWeight(deltaKg, unit));
+      }
+
+      if (transportState !== "RECIBIDO") {
+        if (Math.abs(deltaGrams) <= 10) {
+          transportStateVisual = "OK";
+        } else if (deltaGrams < 0) {
+          transportStateVisual = "FALTANTE";
+        } else {
+          transportStateVisual = "EXCESO";
+        }
+      }
+    } else {
+      setText("transportDelta", "-");
+    }
+
+  } else {
+    transportExtra.style.display = "none";
+    transportActualBlock.style.display = "none";
+    transportDeltaBlock.style.display = "none";
+  }
+
+  // =========================
+  // INVENTARIO
+  // =========================
+  const inventoryExtra =
+    document.getElementById("inventoryExtra");
+
+  if (Number(box.mode) === 3) {
+    inventoryExtra.style.display = "block";
+
+    setText(
+      "inventoryBase",
+      formatWeight(box.inventory_base_kg || 0, unit)
+    );
+
+    setText(
+      "inventoryWeight",
+      formatWeight(box.weight_kg || 0, unit)
+    );
+
+    setText(
+      "inventoryDelta",
+      formatWeight(box.inventory_delta_kg || 0, unit)
+    );
+
+  } else {
+    inventoryExtra.style.display = "none";
+  }
+
+  // =========================
+  // EVENTO GENERAL
+  // =========================
+  const eventLabel =
+    document.getElementById("labelInventoryEvent");
+
+  const eventValue =
+    document.getElementById("inventoryEvent");
+
+  if (eventLabel && eventValue) {
+    if (Number(box.mode) === 2) {
+      eventLabel.style.display = "block";
+      eventValue.style.display = "block";
+      eventLabel.innerText = tr("Evento");
+      eventValue.innerText = getTransportVisualEvent(box);
+
+    } else if (Number(box.mode) === 3) {
+      eventLabel.style.display = "block";
+      eventValue.style.display = "block";
+      eventLabel.innerText = tr("Evento");
+      eventValue.innerText =
+        tr((box.inventory_event || "-").toString().trim().toUpperCase());
+
+    } else {
+      eventLabel.style.display = "none";
+      eventValue.style.display = "none";
+    }
+  }
+
+  // =========================
+  // VALOR / A PAGAR / META
+  // =========================
+  const amountBlock =
+    document.getElementById("amountBlock");
+
+  const amountLabel =
+    document.getElementById("amountLabel");
+
+  if (Number(box.mode) === 1) {
+    amountBlock.style.display = "block";
+    amountLabel.innerText = tr("Valor");
+    setText("amount", formatMoney(box.amount_to_pay));
+
+    fieldExtra.style.display = "block";
+    setText("labelFieldTarget", tr("Meta"));
+    setText("fieldTarget", formatWeight(box.target_kg || 0, unit));
+
+  } else if (Number(box.mode) === 4) {
+    amountBlock.style.display = "block";
+    amountLabel.innerText = tr("A pagar");
+
+    const retailLlevasVisualKg =
+      Number(
+        box.retail_llevas_visual_kg ??
+        box.weight_kg ??
+        0
+      );
+
+    const retailPrice =
+      Number(box.price_per_kg || 0);
+
+    const amountVisual =
+      retailLlevasVisualKg * retailPrice;
+
+    setText("amount", formatMoney(amountVisual));
+
+    fieldExtra.style.display = "block";
+    setText("labelFieldTarget", tr("En caja"));
+
+    const retailQuedaKg =
+      Number(
+        box.retail_queda_visual_kg ??
+        box.retail_queda_kg ??
+        0
+      );
+
+    setText("fieldTarget", formatWeight(retailQuedaKg, unit));
+
+  } else {
+    amountBlock.style.display = "none";
+    fieldExtra.style.display = "none";
+  }
+
+  // =========================
+  // ESTADO
+  // =========================
+  const rawState =
+    (box.state || "-").toString().trim().toUpperCase();
+
+  let stateVisual = "-";
+
+  if (Number(box.mode) === 2) {
+    stateVisual = transportStateVisual || "-";
+  } else if (rawState === "IDLE") {
+    stateVisual = "ESPERA";
+  } else {
+    stateVisual = rawState;
+  }
+
+  const stateEl =
+    document.getElementById("state");
+
+  if (stateEl) {
+    stateEl.classList.remove("pay-alert");
+
+    if (
+      Number(box.mode) === 4 &&
+      (
+        stateVisual === "A PAGAR" ||
+        stateVisual === "TO PAY"
+      )
+    ) {
+      stateEl.innerText = tr("AGREGADO_COMPRA");
+      stateEl.classList.add("pay-alert");
+    } else {
+      stateEl.innerText = tr(stateVisual);
+    }
+  }
+
+  // =========================
+  // SENSOR / BATERIA / UPDATED
+  // =========================
+  const sensorEl =
+    document.getElementById("sensor");
+
+  if (sensorEl) {
+    if (demoSensor !== "OFF") {
+      sensorEl.innerText = demoSensor + ": " + demoValue;
+    } else {
+      sensorEl.innerText = "-";
+    }
+  }
+
+  setText(
+    "battery",
+    box.battery_percent >= 0
+      ? box.battery_percent + "%"
+      : "-"
+  );
+
+  const d =
+    new Date(Number(box.updated_at));
+
+  setText(
+    "updated",
+    tr("Última actualización:") + " " + d.toLocaleString("es-CO")
+  );
 }
 
-
-
-const sensorEl = document.getElementById("sensor");
-
-if (sensorEl) {
-  if (demoSensor !== "OFF") {
-    sensorEl.innerText = demoSensor + ": " + demoValue;
-  } else {
-    sensorEl.innerText = "-";
-  }
-}
-
-  document.getElementById("battery").innerText =
-  box.battery_percent >= 0 ? box.battery_percent + "%" : "-";
-
-  const d = new Date(Number(box.updated_at));
-  // =========================
-  // WEB - ULTIMA ACTUALIZACION TRADUCIDA
-  // Usa el idioma manual actual de la web.
-  // =========================
-  document.getElementById("updated").innerText =tr("Última actualización:") + " " + d.toLocaleString("es-CO");
-  }
-  document.addEventListener("DOMContentLoaded", () => {
-
+// =========================
+// DOM READY / BOTONES
+// =========================
+document.addEventListener("DOMContentLoaded", () => {
   const btn =
     document.getElementById("btnDashboard");
 
@@ -1057,12 +815,14 @@ if (sensorEl) {
   console.log("BTN ADMIN TARE =", btnAdminTare);
 
   // =========================
-  // ADMIN - ABRIR PANTALLA ADMIN
+  // ABRIR ADMIN
   // =========================
   if (btn) {
     btn.addEventListener("click", () => {
-
+      currentScreen = "admin";
       dashboardMode = false;
+
+      setText("title", "LEWMIS Administración");
 
       document.getElementById("singleView").style.display =
         "none";
@@ -1086,21 +846,20 @@ if (sensorEl) {
           "block";
       }
 
-      document.getElementById("title").innerText =
-        "LEWMIS Administración";
-
       btn.style.display =
         "none";
     });
   }
 
   // =========================
-  // ADMIN - ABRIR DASHBOARD
+  // ADMIN - DASHBOARD
   // =========================
   if (btnOpenDashboard) {
     btnOpenDashboard.addEventListener("click", () => {
-
+      currentScreen = "dashboard";
       dashboardMode = true;
+
+      setText("title", "LEWMIS Dashboard");
 
       document.getElementById("adminView").style.display =
         "none";
@@ -1119,8 +878,7 @@ if (sensorEl) {
           "none";
       }
 
-      document.getElementById("title").innerText =
-        "LEWMIS Dashboard";
+      loadBoxStatus();
     });
   }
 
@@ -1129,8 +887,10 @@ if (sensorEl) {
   // =========================
   if (btnBackFromDashboard) {
     btnBackFromDashboard.addEventListener("click", () => {
-
+      currentScreen = "admin";
       dashboardMode = false;
+
+      setText("title", "LEWMIS Administración");
 
       document.getElementById("dashboardView").style.display =
         "none";
@@ -1148,18 +908,15 @@ if (sensorEl) {
         retailView.style.display =
           "none";
       }
-
-      document.getElementById("title").innerText =
-        "LEWMIS Administración";
     });
   }
 
   // =========================
-  // ADMIN - VOLVER A VISTA NORMAL
+  // ADMIN - VOLVER
   // =========================
   if (btnBackFromAdmin) {
     btnBackFromAdmin.addEventListener("click", () => {
-
+      currentScreen = "single";
       dashboardMode = false;
 
       document.getElementById("adminView").style.display =
@@ -1178,9 +935,6 @@ if (sensorEl) {
         retailView.style.display =
           "none";
       }
-
-      document.getElementById("title").innerText =
-        "LEWMIS";
 
       if (btn) {
         btn.style.display =
@@ -1189,6 +943,9 @@ if (sensorEl) {
         btn.innerText =
           "Administración";
       }
+
+      setText("title", "LEWMIS");
+      loadBoxStatus();
     });
   }
 
@@ -1206,11 +963,12 @@ if (sensorEl) {
   }
 
   // =========================
-  // RETAIL INTERACTIVO
-  // ABRIR CARRITO
+  // RETAIL - VER COMPRA
   // =========================
   if (btnRetailView) {
     btnRetailView.addEventListener("click", () => {
+      currentScreen = "retail";
+      dashboardMode = false;
 
       document.getElementById("singleView").style.display =
         "none";
@@ -1229,8 +987,7 @@ if (sensorEl) {
       document.getElementById("retailView").style.display =
         "block";
 
-      document.getElementById("title").innerText =
-        "Retail interactivo";
+      setText("title", "Retail interactivo");
 
       renderRetailCart();
 
@@ -1242,8 +999,7 @@ if (sensorEl) {
   }
 
   // =========================
-  // RETAIL INTERACTIVO
-  // LIMPIAR CARRITO
+  // RETAIL - LIMPIAR CARRITO
   // =========================
   if (btnClearCart) {
     btnClearCart.addEventListener("click", () => {
@@ -1255,17 +1011,14 @@ if (sensorEl) {
   }
 
   // =========================
-  // RETAIL INTERACTIVO
-  // PAGO DEMO
+  // RETAIL - PAGO DEMO
   // =========================
   if (btnPayNow) {
     btnPayNow.addEventListener("click", () => {
-
       const checkoutMsg =
         document.getElementById("retailCheckoutMessage");
 
       if (retailCart.length === 0) {
-
         if (checkoutMsg) {
           checkoutMsg.style.display =
             "block";
@@ -1303,7 +1056,6 @@ if (sensorEl) {
       }
 
       setTimeout(() => {
-
         if (checkoutMsg) {
           checkoutMsg.style.background =
             "#1b4332";
@@ -1327,241 +1079,66 @@ if (sensorEl) {
       }, 1500);
     });
   }
-
-});
-    // =========================
-   // RETAIL INTERACTIVO
-   // Cambia desde vista individual
-   // hacia el carrito multi-caja.
-   // =========================
-if (btnRetailView) {
-  btnRetailView.addEventListener("click", () => {
-    document.getElementById("singleView").style.display =
-      "none";
-    document.getElementById("dashboardView").style.display =
-      "none";
-    document.getElementById("retailView").style.display =
-  "block";
-    document.getElementById("title").innerText =
-      "Retail interactivo";
-    // =========================
-    // RETAIL INTERACTIVO
-    // Al entrar a la vista de compra,
-    // actualizamos el carrito en pantalla.
-    // =========================
-    renderRetailCart();
-    // UX RETAIL
-    // El botón principal ahora
-    // permite volver a la compra.
-btn.innerText = "Volver";
-  });
-}
-// =========================
-// RETAIL INTERACTIVO
-// Limpia toda la compra demo.
-// =========================
-if (btnClearCart) {
-  btnClearCart.addEventListener("click", () => {
-    retailCart = [];
-    processedRetailEvents.clear();
-    renderRetailCart();
-    console.log(
-      "CARRITO LIMPIADO"
-    );
-  });
-}
-
-// =========================
-// RETAIL INTERACTIVO
-// Simulación de pago con TDC.
-// =========================
-// =========================
-// RETAIL INTERACTIVO
-// Simulación visual de pago TDC.
-// =========================
-if (btnPayNow) {
-
-  btnPayNow.addEventListener("click", () => {
-
-    const checkoutMsg =
-      document.getElementById(
-        "retailCheckoutMessage"
-      );
-
-    if (retailCart.length === 0) {
-
-      if (checkoutMsg) {
-
-        checkoutMsg.style.display =
-          "block";
-
-        checkoutMsg.style.background =
-          "#5c1f1f";
-
-        checkoutMsg.style.color =
-          "#ff8a80";
-
-        checkoutMsg.innerText =
-          "No hay productos para pagar.";
-
-        setTimeout(() => {
-
-  checkoutMsg.style.display =
-    "none";
-
-}, 2500);
-
-      }
-
-      return;
-    }
-
-    // =========================
-    // PROCESANDO PAGO
-    // =========================
-    if (checkoutMsg) {
-
-      checkoutMsg.style.display =
-        "block";
-
-      checkoutMsg.style.background =
-        "#1b2733";
-
-      checkoutMsg.style.color =
-        "#4fc3f7";
-
-      checkoutMsg.innerText =
-        "Pagando vía TDC...";
-
-    }
-
-    // =========================
-    // PAGO APROBADO
-    // =========================
-    setTimeout(() => {
-
-      if (checkoutMsg) {
-
-        checkoutMsg.style.background =
-          "#1b4332";
-
-        checkoutMsg.style.color =
-          "#95d5b2";
-
-        checkoutMsg.innerText =
-          "Pago aprobado.";
-
-        setTimeout(() => {
-
-        checkoutMsg.style.display =
-    "none";
-
-}, 2500);
-
-      }
-
-      retailCart = [];
-
-      processedRetailEvents.clear();
-
-      renderRetailCart();
-
-    }, 1500);
-
-  });
-
-}
-    
 });
 
-  // =========================
-  // RETAIL INTERACTIVO
-  // Agrega una compra al carrito.
-  //
-  // Solo guarda:
-  // - caja
-  // - producto
-  // - peso tomado
-  // - valor a pagar
-  // - momento del evento
-  //
-  // eventKey evita duplicados.
-  // =========================
-  function addRetailCartItem(box) {
+// =========================
+// RETAIL - AGREGAR AL CARRITO
+// =========================
+function addRetailCartItem(box) {
   console.log("INTENTO AGREGAR AL CARRITO:", box);
-    
-// =========================
-// RETAIL - CLAVE DE EVENTO
-// Evita duplicados en carrito.
-//
-// Usamos:
-// caja + peso comprado + valor + ventana de tiempo
-//
-// La ventana redondea updated_at a bloques
-// de 3 segundos para agrupar lecturas del
-// mismo evento A PAGAR.
-// =========================
-const eventTimeBucket =
-  Math.floor(Number(box.updated_at || Date.now()) / 3000);
 
-const eventWeight =
-  Number(box.weight_kg || 0).toFixed(3);
+  const eventTimeBucket =
+    Math.floor(Number(box.updated_at || Date.now()) / 3000);
 
-const eventAmount =
-  Number(box.amount_to_pay || 0).toFixed(0);
+  const eventWeight =
+    Number(box.weight_kg || 0).toFixed(3);
 
-const eventKey =
-  `${box.box_id || "-"}|${eventTimeBucket}|${eventWeight}|${eventAmount}`;
+  const eventAmount =
+    Number(box.amount_to_pay || 0).toFixed(0);
 
-console.log("EVENT KEY:", eventKey);
+  const eventKey =
+    `${box.box_id || "-"}|${eventTimeBucket}|${eventWeight}|${eventAmount}`;
 
-if (processedRetailEvents.has(eventKey)) {
-  console.log("EVENTO YA EXISTE, NO AGREGO:", eventKey);
-  return;
-}
+  console.log("EVENT KEY:", eventKey);
 
-  
+  if (processedRetailEvents.has(eventKey)) {
+    console.log("EVENTO YA EXISTE, NO AGREGO:", eventKey);
+    return;
+  }
 
   processedRetailEvents.add(eventKey);
 
-const cartWeightKg =
-  Number(
-    box.retail_llevas_visual_kg ??
-    box.weight_kg ??
-    0
-  );
+  const cartWeightKg =
+    Number(
+      box.retail_llevas_visual_kg ??
+      box.weight_kg ??
+      0
+    );
 
-const cartPrice =
-  Number(box.price_per_kg || 0);
+  const cartPrice =
+    Number(box.price_per_kg || 0);
 
-const cartAmount =
-  cartWeightKg * cartPrice;
+  const cartAmount =
+    cartWeightKg * cartPrice;
 
-retailCart.push({
-  box_id: box.box_id || "-",
-  product: box.product || "-",
-  weight_kg: cartWeightKg,
-  amount_to_pay: cartAmount,
-  unit: (box.unit || "kg").toLowerCase(),
-  updated_at: box.updated_at || Date.now()
-});
+  retailCart.push({
+    box_id: box.box_id || "-",
+    product: box.product || "-",
+    weight_kg: cartWeightKg,
+    amount_to_pay: cartAmount,
+    unit: (box.unit || "kg").toLowerCase(),
+    updated_at: box.updated_at || Date.now()
+  });
 
-// =========================
-// ACTUALIZAR UI DEL CARRITO
-// inmediatamente después
-// de agregar una compra.
-// =========================
-renderRetailCart();
+  renderRetailCart();
 
-console.log("CARRITO ACTUAL:", retailCart);
+  console.log("CARRITO ACTUAL:", retailCart);
 }
 
 // =========================
-// RETAIL INTERACTIVO
-// Renderiza el carrito visual.
+// RETAIL - RENDER CARRITO
 // =========================
 function renderRetailCart() {
-
   const cart =
     document.getElementById("retailCart");
 
@@ -1570,37 +1147,28 @@ function renderRetailCart() {
 
   if (!cart || !totalEl) return;
 
-  // =========================
-  // CARRITO VACIO
-  // =========================
   if (retailCart.length === 0) {
-
     cart.innerHTML = `
       <div class="small">
         No hay productos agregados
       </div>
     `;
 
-    totalEl.innerText = "$ 0,00";
+    totalEl.innerText =
+      "$ 0,00";
 
     return;
   }
 
-  // =========================
-  // LIMPIAR CONTENIDO
-  // =========================
-  cart.innerHTML = "";
-  console.log("RENDER RETAIL CART LENGTH:", retailCart.length);
-  console.log("RENDER RETAIL CART DATA:", retailCart);
+  cart.innerHTML =
+    "";
 
-  let total = 0;
+  let total =
+    0;
 
-  // =========================
-  // UNA FILA POR PRODUCTO
-  // =========================
   retailCart.forEach(item => {
-
-    total += Number(item.amount_to_pay || 0);
+    total +=
+      Number(item.amount_to_pay || 0);
 
     const row =
       document.createElement("div");
@@ -1612,15 +1180,12 @@ function renderRetailCart() {
       "12px 0";
 
     row.innerHTML = `
-
       <div style="
         display:flex;
         justify-content:space-between;
         gap:12px;
       ">
-
         <div>
-
           <div style="
             font-weight:bold;
             font-size:18px;
@@ -1635,63 +1200,45 @@ function renderRetailCart() {
           ">
             ${item.box_id}
           </div>
-
         </div>
 
         <div style="text-align:right;">
-
           <div style="
             font-weight:bold;
           ">
-            ${formatWeight(
-              item.weight_kg,
-              item.unit
-            )}
+            ${formatWeight(item.weight_kg, item.unit)}
           </div>
 
           <div style="
             color:#ffd54f;
             margin-top:4px;
           ">
-            ${formatMoney(
-              item.amount_to_pay
-            )}
+            ${formatMoney(item.amount_to_pay)}
           </div>
-
         </div>
-
       </div>
     `;
 
     cart.appendChild(row);
-
   });
 
   totalEl.innerText =
     formatMoney(total);
 }
-    // =========================
-    // RENDER DASHBOARD
-    // Llena la tabla multi-caja
-    // usando todas las filas recibidas
-    // desde Supabase.
-    // =========================
-    function renderDashboard(rows) {
 
-    const tbody = document.getElementById("dashboardRows");
+// =========================
+// DASHBOARD MULTI-CAJA
+// =========================
+function renderDashboard(rows) {
+  const tbody =
+    document.getElementById("dashboardRows");
 
-    if (!tbody) return;
+  if (!tbody) return;
 
-    // =========================
-    // LIMPIAR TABLA
-    // =========================
-    tbody.innerHTML = "";
+  tbody.innerHTML =
+    "";
 
-    // =========================
-    // SIN DATOS
-    // =========================
   if (!rows || rows.length === 0) {
-
     tbody.innerHTML = `
       <tr>
         <td colspan="6" style="
@@ -1702,15 +1249,10 @@ function renderRetailCart() {
         </td>
       </tr>
     `;
-
     return;
   }
 
-  // =========================
-  // CREAR UNA FILA POR CAJA
-  // =========================
   rows.forEach(box => {
-
     const unit =
       (box.unit || "kg").toLowerCase();
 
@@ -1721,19 +1263,18 @@ function renderRetailCart() {
       formatWeight(box.weight_kg || 0, unit);
 
     const state =
-      tr((box.state || "-")
-      .toString()
-      .trim()
-      .toUpperCase());
+      tr(
+        (box.state || "-")
+          .toString()
+          .trim()
+          .toUpperCase()
+      );
 
     const battery =
       box.battery_percent >= 0
         ? box.battery_percent + "%"
         : "-";
 
-    // =========================
-    // CREAR FILA HTML
-    // =========================
     const trRow =
       document.createElement("tr");
 
@@ -1741,58 +1282,59 @@ function renderRetailCart() {
       "1px solid #263238";
 
     trRow.innerHTML = `
+      <td style="
+        padding:8px;
+        white-space:nowrap;
+        min-width:110px;
+        font-weight:bold;
+      ">
+        ${box.box_id || "-"}
+      </td>
 
-  <td style="
-    padding:8px;
-    white-space:nowrap;
-    min-width:110px;
-    font-weight:bold;
-  ">
-    ${box.box_id || "-"}
-  </td>
+      <td style="
+        padding:8px;
+        white-space:nowrap;
+        min-width:90px;
+      ">
+        ${box.product || "-"}
+      </td>
 
-  <td style="
-    padding:8px;
-    white-space:nowrap;
-    min-width:90px;
-  ">
-    ${box.product || "-"}
-  </td>
+      <td style="
+        padding:8px;
+        white-space:nowrap;
+      ">
+        ${modeLabel}
+      </td>
 
-  <td style="
-    padding:8px;
-    white-space:nowrap;
-  ">
-    ${modeLabel}
-  </td>
+      <td style="
+        padding:8px;
+        white-space:nowrap;
+        min-width:80px;
+      ">
+        ${weight}
+      </td>
 
-  <td style="
-    padding:8px;
-    white-space:nowrap;
-    min-width:80px;
-  ">
-    ${weight}
-  </td>
+      <td style="
+        padding:8px;
+        white-space:nowrap;
+      ">
+        ${state}
+      </td>
 
-  <td style="
-    padding:8px;
-    white-space:nowrap;
-  ">
-    ${state}
-  </td>
-
-  <td style="
-    padding:8px;
-    white-space:nowrap;
-  ">
-    ${battery}
-  </td>
-`;
+      <td style="
+        padding:8px;
+        white-space:nowrap;
+      ">
+        ${battery}
+      </td>
+    `;
 
     tbody.appendChild(trRow);
-
   });
-
 }
-  loadBoxStatus(); 
-  setInterval(loadBoxStatus, 1000);
+
+// =========================
+// START
+// =========================
+loadBoxStatus();
+setInterval(loadBoxStatus, 1000);
