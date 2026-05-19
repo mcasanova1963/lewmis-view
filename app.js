@@ -1001,6 +1001,7 @@ const btnBackFromAdmin =
   document.getElementById("btnBackFromDashboard");
     const btnAdminTare =
   document.getElementById("btnAdminTare");
+    console.log("BTN ADMIN TARE =", btnAdminTare);
   // =========================
   // BOTON RETAIL VIEW
   // Abre la pantalla de compra
