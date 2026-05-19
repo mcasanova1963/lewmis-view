@@ -1028,182 +1028,306 @@ if (sensorEl) {
   // =========================
   document.getElementById("updated").innerText =tr("Última actualización:") + " " + d.toLocaleString("es-CO");
   }
-  // =========================
-  // BOTON DASHBOARD
-  // Alterna entre:
-  //
-  // - Vista individual
-  // - Dashboard multi-caja
-  // =========================
   document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("btnDashboard");
-    const btnOpenDashboard =
-  document.getElementById("btnOpenDashboard");
-const btnBackFromAdmin =
-  document.getElementById("btnBackFromAdmin");
-    const btnBackFromDashboard =
-  document.getElementById("btnBackFromDashboard");
-    const btnAdminTare =
-  document.getElementById("btnAdminTare");
-    console.log("BTN ADMIN TARE =", btnAdminTare);
-  // =========================
-  // BOTON RETAIL VIEW
-  // Abre la pantalla de compra
-  // interactiva multi-caja.
-  // =========================
+
+  const btn =
+    document.getElementById("btnDashboard");
+
+  const btnOpenDashboard =
+    document.getElementById("btnOpenDashboard");
+
+  const btnBackFromAdmin =
+    document.getElementById("btnBackFromAdmin");
+
+  const btnBackFromDashboard =
+    document.getElementById("btnBackFromDashboard");
+
+  const btnAdminTare =
+    document.getElementById("btnAdminTare");
+
   const btnRetailView =
-  document.getElementById("btnRetailView");
-  // =========================
-  // BOTON LIMPIAR CARRITO
-  // =========================
+    document.getElementById("btnRetailView");
+
   const btnClearCart =
-  document.getElementById("btnClearCart");
-  // =========================
-  // BOTON PAGAR AHORA
-  // Simula pago demo por TDC.
-  // =========================
+    document.getElementById("btnClearCart");
+
   const btnPayNow =
-  document.getElementById("btnPayNow");
+    document.getElementById("btnPayNow");
 
-  if (!btn) return;
-
-btn.addEventListener("click", () => {
+  console.log("BTN ADMIN TARE =", btnAdminTare);
 
   // =========================
-  // BOTON ADMINISTRACION
-  // Desde cualquier modo abre
-  // la pantalla Admin, no el dashboard.
+  // ADMIN - ABRIR PANTALLA ADMIN
   // =========================
+  if (btn) {
+    btn.addEventListener("click", () => {
 
-  dashboardMode = false;
+      dashboardMode = false;
 
-  document.getElementById("singleView").style.display =
-    "none";
+      document.getElementById("singleView").style.display =
+        "none";
 
-  document.getElementById("dashboardView").style.display =
-    "none";
+      document.getElementById("dashboardView").style.display =
+        "none";
 
-  const retailView =
-    document.getElementById("retailView");
+      const retailView =
+        document.getElementById("retailView");
 
-  if (retailView) {
-    retailView.style.display =
-      "none";
+      if (retailView) {
+        retailView.style.display =
+          "none";
+      }
+
+      const adminView =
+        document.getElementById("adminView");
+
+      if (adminView) {
+        adminView.style.display =
+          "block";
+      }
+
+      document.getElementById("title").innerText =
+        "LEWMIS Administración";
+
+      btn.style.display =
+        "none";
+    });
   }
 
-  const adminView =
-    document.getElementById("adminView");
+  // =========================
+  // ADMIN - ABRIR DASHBOARD
+  // =========================
+  if (btnOpenDashboard) {
+    btnOpenDashboard.addEventListener("click", () => {
 
-  if (adminView) {
-    adminView.style.display =
-      "block";
+      dashboardMode = true;
+
+      document.getElementById("adminView").style.display =
+        "none";
+
+      document.getElementById("singleView").style.display =
+        "none";
+
+      document.getElementById("dashboardView").style.display =
+        "block";
+
+      const retailView =
+        document.getElementById("retailView");
+
+      if (retailView) {
+        retailView.style.display =
+          "none";
+      }
+
+      document.getElementById("title").innerText =
+        "LEWMIS Dashboard";
+    });
   }
 
-  document.getElementById("title").innerText =
-    "LEWMIS Administración";
-
-  btn.style.display =
-    "none";
   // =========================
-// ADMIN - ABRIR DASHBOARD
-// =========================
-if (btnOpenDashboard) {
-  btnOpenDashboard.addEventListener("click", () => {
+  // DASHBOARD - VOLVER A ADMIN
+  // =========================
+  if (btnBackFromDashboard) {
+    btnBackFromDashboard.addEventListener("click", () => {
 
-    dashboardMode = true;
+      dashboardMode = false;
 
-    document.getElementById("adminView").style.display =
-      "none";
-
-    document.getElementById("singleView").style.display =
-      "none";
-
-    document.getElementById("dashboardView").style.display =
-      "block";
-
-    const retailView =
-      document.getElementById("retailView");
-
-    if (retailView) {
-      retailView.style.display =
+      document.getElementById("dashboardView").style.display =
         "none";
-    }
 
-    document.getElementById("title").innerText =
-      "LEWMIS Dashboard";
-// =========================
-// ADMIN - TARE
-// Prueba inicial de comandos remotos.
-// =========================
-if (btnAdminTare) {
-  btnAdminTare.addEventListener("click", () => {
-    runAdminButtonCommand(
-      btnAdminTare,
-      "t",
-      "TARE"
-    );
-  });
-}
-    
-    // =========================
-// DASHBOARD - VOLVER A ADMIN
-// =========================
-if (btnBackFromDashboard) {
-  btnBackFromDashboard.addEventListener("click", () => {
+      document.getElementById("adminView").style.display =
+        "block";
 
-    dashboardMode = false;
-
-    document.getElementById("dashboardView").style.display =
-      "none";
-
-    document.getElementById("adminView").style.display =
-      "block";
-
-    document.getElementById("singleView").style.display =
-      "none";
-
-    const retailView =
-      document.getElementById("retailView");
-
-    if (retailView) {
-      retailView.style.display =
+      document.getElementById("singleView").style.display =
         "none";
-    }
 
-    document.getElementById("title").innerText =
-      "LEWMIS Administración";
-  });
-}
-  });
-}
+      const retailView =
+        document.getElementById("retailView");
 
-// =========================
-// ADMIN - VOLVER A VISTA NORMAL
-// =========================
-if (btnBackFromAdmin) {
-  btnBackFromAdmin.addEventListener("click", () => {
+      if (retailView) {
+        retailView.style.display =
+          "none";
+      }
 
-    dashboardMode = false;
+      document.getElementById("title").innerText =
+        "LEWMIS Administración";
+    });
+  }
 
-    document.getElementById("adminView").style.display =
-      "none";
+  // =========================
+  // ADMIN - VOLVER A VISTA NORMAL
+  // =========================
+  if (btnBackFromAdmin) {
+    btnBackFromAdmin.addEventListener("click", () => {
 
-    document.getElementById("dashboardView").style.display =
-      "none";
+      dashboardMode = false;
 
-    document.getElementById("singleView").style.display =
-      "block";
+      document.getElementById("adminView").style.display =
+        "none";
 
-    document.getElementById("title").innerText =
-      "LEWMIS";
+      document.getElementById("dashboardView").style.display =
+        "none";
 
-    btn.style.display =
-      "block";
+      document.getElementById("singleView").style.display =
+        "block";
 
-    btn.innerText =
-      "Administración";
-  });
-}
+      const retailView =
+        document.getElementById("retailView");
+
+      if (retailView) {
+        retailView.style.display =
+          "none";
+      }
+
+      document.getElementById("title").innerText =
+        "LEWMIS";
+
+      if (btn) {
+        btn.style.display =
+          "block";
+
+        btn.innerText =
+          "Administración";
+      }
+    });
+  }
+
+  // =========================
+  // ADMIN - TARE REMOTO
+  // =========================
+  if (btnAdminTare) {
+    btnAdminTare.addEventListener("click", () => {
+      runAdminButtonCommand(
+        btnAdminTare,
+        "t",
+        "TARE"
+      );
+    });
+  }
+
+  // =========================
+  // RETAIL INTERACTIVO
+  // ABRIR CARRITO
+  // =========================
+  if (btnRetailView) {
+    btnRetailView.addEventListener("click", () => {
+
+      document.getElementById("singleView").style.display =
+        "none";
+
+      document.getElementById("dashboardView").style.display =
+        "none";
+
+      const adminView =
+        document.getElementById("adminView");
+
+      if (adminView) {
+        adminView.style.display =
+          "none";
+      }
+
+      document.getElementById("retailView").style.display =
+        "block";
+
+      document.getElementById("title").innerText =
+        "Retail interactivo";
+
+      renderRetailCart();
+
+      if (btn) {
+        btn.innerText =
+          "Volver";
+      }
+    });
+  }
+
+  // =========================
+  // RETAIL INTERACTIVO
+  // LIMPIAR CARRITO
+  // =========================
+  if (btnClearCart) {
+    btnClearCart.addEventListener("click", () => {
+      retailCart = [];
+      processedRetailEvents.clear();
+      renderRetailCart();
+      console.log("CARRITO LIMPIADO");
+    });
+  }
+
+  // =========================
+  // RETAIL INTERACTIVO
+  // PAGO DEMO
+  // =========================
+  if (btnPayNow) {
+    btnPayNow.addEventListener("click", () => {
+
+      const checkoutMsg =
+        document.getElementById("retailCheckoutMessage");
+
+      if (retailCart.length === 0) {
+
+        if (checkoutMsg) {
+          checkoutMsg.style.display =
+            "block";
+
+          checkoutMsg.style.background =
+            "#5c1f1f";
+
+          checkoutMsg.style.color =
+            "#ff8a80";
+
+          checkoutMsg.innerText =
+            "No hay productos para pagar.";
+
+          setTimeout(() => {
+            checkoutMsg.style.display =
+              "none";
+          }, 2500);
+        }
+
+        return;
+      }
+
+      if (checkoutMsg) {
+        checkoutMsg.style.display =
+          "block";
+
+        checkoutMsg.style.background =
+          "#1b2733";
+
+        checkoutMsg.style.color =
+          "#4fc3f7";
+
+        checkoutMsg.innerText =
+          "Pagando vía TDC...";
+      }
+
+      setTimeout(() => {
+
+        if (checkoutMsg) {
+          checkoutMsg.style.background =
+            "#1b4332";
+
+          checkoutMsg.style.color =
+            "#95d5b2";
+
+          checkoutMsg.innerText =
+            "Pago aprobado.";
+
+          setTimeout(() => {
+            checkoutMsg.style.display =
+              "none";
+          }, 2500);
+        }
+
+        retailCart = [];
+        processedRetailEvents.clear();
+        renderRetailCart();
+
+      }, 1500);
+    });
+  }
+
 });
     // =========================
    // RETAIL INTERACTIVO
