@@ -973,7 +973,49 @@ const btnAdminMode4 =
       );
     });
   }
+// =========================
+// ADMIN - CAMBIAR MODO REMOTO
+// Usa los mismos comandos que Android.
+// =========================
+if (btnAdminMode1) {
+  btnAdminMode1.addEventListener("click", () => {
+    runAdminButtonCommand(
+      btnAdminMode1,
+      "m=1",
+      "Modo Campo"
+    );
+  });
+}
 
+if (btnAdminMode2) {
+  btnAdminMode2.addEventListener("click", () => {
+    runAdminButtonCommand(
+      btnAdminMode2,
+      "m=2",
+      "Modo Transporte"
+    );
+  });
+}
+
+if (btnAdminMode3) {
+  btnAdminMode3.addEventListener("click", () => {
+    runAdminButtonCommand(
+      btnAdminMode3,
+      "m=3",
+      "Modo Inventario"
+    );
+  });
+}
+
+if (btnAdminMode4) {
+  btnAdminMode4.addEventListener("click", () => {
+    runAdminButtonCommand(
+      btnAdminMode4,
+      "m=4",
+      "Modo Retail"
+    );
+  });
+}
   // =========================
   // RETAIL - VER COMPRA
   // =========================
